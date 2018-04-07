@@ -1,0 +1,157 @@
+package main;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+public class MenuButton {
+    
+    private MenuLabel label;
+    private float x, y, w, h;
+    private Color bodyColor;
+    private Color hoverColor;
+    private Color clickedColor;
+    private float borderThickness;
+    private float cornerRounding;
+    private String id;
+    
+    private boolean wasPressed;
+    private boolean isClicked;
+    private boolean isHovered;
+    private boolean isHeld;
+    private boolean isReleased;
+    
+    public MenuButton(MenuLabel label, float x, float y, float w, float h, Color bodyColor, Color hoverColor, Color clickedColor, float borderThickness, float cornerRounding, String id){
+        this.label = label;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.bodyColor = bodyColor;
+        this.hoverColor = hoverColor;
+        this.clickedColor = clickedColor;
+        this.borderThickness = borderThickness;
+        this.cornerRounding = cornerRounding;
+        this.id = id;
+        
+        wasPressed = false;
+        isClicked = false;
+        isHovered = false;
+        isHeld = false;
+        isReleased = false;
+    }
+    
+    final void checkButtons(){
+        boolean mouseOver = isMouseOver((int)(x * Window.getWidth()), (int)(y * Window.getHeight()), (int)(w * Window.getWidth()), (int)(h * Window.getHeight()));
+        
+        isClicked = mouseOver && Input.isButtonPressed(MouseEvent.BUTTON1);
+        if(isClicked){
+            wasPressed = true;
+        }
+        
+        isReleased = wasPressed && Input.isButtonReleased(MouseEvent.BUTTON1);
+        if(isReleased){
+            wasPressed = false;
+        }
+        
+        isHovered = mouseOver;
+        isHeld = wasPressed;
+    }
+    
+    protected void update(){
+        // Empty
+    }
+    
+    private static boolean isMouseOver(int xPos, int yPos, int width, int height){
+        Point mousePos = Game.getMouseLocation();
+        if(mousePos != null){
+            int mouseX = (int)mousePos.getX();
+            int mouseY = (int)mousePos.getY();
+            
+            boolean xInside = mouseX > xPos && mouseX < xPos + width;
+            boolean yInside = mouseY > yPos && mouseY < yPos + height;
+            
+            return xInside && yInside;
+        }else{
+            return false;
+        }
+    }
+    
+    protected void render(Graphics2D g){
+        Color currentColor;
+        
+        if(isHeld){
+            currentColor = clickedColor;
+        }else if(isHovered){
+            currentColor = hoverColor;
+        }else{
+            currentColor = label.getColor();
+        }
+        
+        g.setColor(bodyColor);
+        g.fillRoundRect((int)(x * Window.getWidth()), (int)(y * Window.getHeight()), (int)(w * Window.getWidth()), (int)(h * Window.getHeight()), (int)(cornerRounding * Window.getWidth()), (int)(cornerRounding * Window.getWidth()));
+        g.setColor(currentColor);
+        g.setStroke(new BasicStroke(borderThickness * Window.getWidth()));
+        g.drawRoundRect((int)(x * Window.getWidth()), (int)(y * Window.getHeight()), (int)(w * Window.getWidth()), (int)(h * Window.getHeight()), (int)(cornerRounding * Window.getWidth()), (int)(cornerRounding * Window.getWidth()));
+        label.render(g, currentColor);
+    }
+    
+    public MenuLabel getLabel(){
+        return label;
+    }
+    
+    public float getX(){
+        return x;
+    }
+    
+    public void setX(float x){
+        this.x = x;
+    }
+    
+    public float getY(){
+        return y;
+    }
+    
+    public void setY(float y){
+        this.y = y;
+    }
+    
+    public float getWidth(){
+        return w;
+    }
+    
+    public void setWidth(float w){
+        this.w = w;
+    }
+    
+    public float getHeight(){
+        return h;
+    }
+    
+    public void setHeight(float h){
+        this.h = h;
+    }
+    
+    public String getID(){
+        return id;
+    }
+    
+    public boolean isClicked(){
+        return isClicked;
+    }
+    
+    public boolean isHovered(){
+        return isHovered;
+    }
+    
+    public boolean isHeld(){
+        return isHeld;
+    }
+    
+    public boolean isReleased(){
+        return isReleased;
+    }
+    
+}

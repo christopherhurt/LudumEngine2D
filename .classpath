@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="libs/slick-util/ibxm.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/jogg-0.0.7.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/jorbis-0.0.15.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/lwjgl_util_applet.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LudumEngine/libs/windows"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/slick-util/natives-linux.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/natives-mac.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/natives-windows.jar"/>
+	<classpathentry kind="lib" path="libs/slick-util/slick-util-src.zip"/>
+	<classpathentry kind="lib" path="libs/slick-util/slick-util.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
