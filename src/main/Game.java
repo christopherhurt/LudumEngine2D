@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferStrategy;
+import java.util.List;
 
 public class Game {
     
@@ -15,6 +16,7 @@ public class Game {
     private static Color clearColor = null;
     private static boolean gamePaused = false;
     private static String resourcesFolder = "res";
+    private static List<Scene> scenes = null; // DO SHIT WITH THIS
     
     private Game(){}
     
@@ -66,6 +68,10 @@ public class Game {
     
     public static Dimension getWindowSize(){
         return new Dimension(Window.getWidth(), Window.getHeight());
+    }
+    
+    public static float getAspectRatio() {
+        return (float)Window.getWidth() / Window.getHeight();
     }
     
     public static Point getMouseLocation(){

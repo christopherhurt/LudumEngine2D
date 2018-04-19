@@ -9,13 +9,12 @@
 	<classpathentry kind="lib" path="libs/slick-util/lwjgl_util.jar"/>
 	<classpathentry kind="lib" path="libs/slick-util/lwjgl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LudumEngine/libs/windows"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LudumEngine/libs/natives"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/slick-util/natives-linux.jar"/>
 	<classpathentry kind="lib" path="libs/slick-util/natives-mac.jar"/>
 	<classpathentry kind="lib" path="libs/slick-util/natives-windows.jar"/>
-	<classpathentry kind="lib" path="libs/slick-util/slick-util-src.zip"/>
 	<classpathentry kind="lib" path="libs/slick-util/slick-util.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
