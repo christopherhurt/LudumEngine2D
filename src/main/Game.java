@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferStrategy;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game {
     
@@ -16,7 +17,8 @@ public class Game {
     private static Color clearColor = null;
     private static boolean gamePaused = false;
     private static String resourcesFolder = "res";
-    private static List<Scene> scenes = null; // DO SHIT WITH THIS
+    private static List<Scene> scenes = null;
+    private static Scene currentScene = null;
     
     private Game(){}
     
@@ -26,7 +28,12 @@ public class Game {
         }
         initialized = true;
         
+        if(currentScene == null) {
+            throw new IllegalStateException("You must create a scene before starting the game");
+        }
+        
         canvas = new Canvas();
+        scenes = new CopyOnWriteArrayList<>();
         Input inputListener = new Input();
         canvas.addKeyListener(inputListener);
         canvas.addMouseListener(inputListener);
@@ -38,20 +45,122 @@ public class Game {
         begin();
     }
     
-    public static Manager getManager(String name){
-        return ManagerHandler.getManager(name);
+    public static boolean createScene(String sceneID) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                return false;
+            }
+        }
+        
+        Scene newScene = new Scene(sceneID);
+        boolean success = scenes.add(newScene);
+        
+        if(currentScene == null && success) {
+            currentScene = newScene;
+        }
+        
+        return success;
     }
     
-    public static Menu getMenu(String name){
-        return MenuHandler.getMenu(name);
+    public static boolean deleteScene(String sceneID) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                if(currentScene == scene) {
+                    return false;
+                }
+                
+                return scenes.remove(scene);
+            }
+        }
+        
+        return false;
     }
     
-    public static void setCurrentMenu(String name){
-        MenuHandler.setCurrentMenu(name);
+    public static boolean addObjectToScene(String sceneID, GameObject obj) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                return scene.addObject(obj);
+            }
+        }
+        
+        return false;
     }
     
-    public static void setCurrentManager(String name){
-        ManagerHandler.setCurrentManager(name);
+    public static boolean removeObjectFromScene(String sceneID, GameObject obj) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                return scene.removeObject(obj);
+            }
+        }
+        
+        return false;
+    }
+    
+    public static boolean attachMenuToScene(String sceneID, Menu menu) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                scene.attachMenu(menu);
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public static boolean detachMenuFromScene(String sceneID) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                scene.detachMenu();
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public static void clearScene(String sceneID) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                scene.clearObjects();
+            }
+        }
+    }
+    
+    public static List<GameObject> getGameObjects(String objID) {
+        return currentScene.getObjects(objID);
+    }
+    
+    public static Menu getMenu() {
+        return currentScene.getMenu();
+    }
+    
+    public static void readdObjects(String objID) {
+        currentScene.readdObjects(objID);
+    }
+    
+    public static int getObjectsCount() {
+        return currentScene.getObjectCount();
+    }
+    
+    public static boolean setCurrentScene(String sceneID) {
+        if(sceneID == null) {
+            return false;
+        }
+        
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                currentScene = scene;
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    protected static void updateFonts() {
+        for(Scene scene : scenes) {
+            scene.updateMenuFonts();
+        }
     }
     
     public static void setPaused(boolean paused){
@@ -110,8 +219,7 @@ public class Game {
             LinearInterpolator.update();
             Camera.update();
         }
-        ManagerHandler.update();
-        MenuHandler.update();
+        currentScene.update();
     }
     
     private static void render(){
@@ -126,8 +234,7 @@ public class Game {
         g.setColor(clearColor);
         g.fillRect(0, 0, Window.getWidth(), Window.getHeight());
         
-        ManagerHandler.render(g);
-        MenuHandler.render(g);
+        currentScene.render(g);
         
         g.dispose();
         bs.show();

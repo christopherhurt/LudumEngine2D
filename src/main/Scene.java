@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,9 +22,37 @@ public final class Scene {
             menu.checkButtons();
         }
         
-        for(GameObject obj : objects) {
-            obj.update();
+        for(GameObject object : objects) {
+          if(!Game.isPaused() || object.getUpdateWhilePaused()) {
+              if(object instanceof AnimatedGameObject) {
+                  Animation animation = ((AnimatedGameObject)object).getAnimation();
+                  animation.update();
+              }
+              object.updatePhysicsComponents();
+              object.update();
+          }
         }
+    }
+    
+    protected void readdObjects(String objID) {
+      List<GameObject> removedObjects = new ArrayList<>();
+      
+      for(int i = 0; i < objects.size(); i++){
+          GameObject currentObject = objects.get(i);
+          
+          if(currentObject.getID().equals(objID)){
+              removedObjects.add(objects.remove(i));
+              i--;
+          }
+      }
+      
+      for(GameObject object : removedObjects){
+          objects.add(object);
+      }
+    }
+    
+    protected int getObjectCount() {
+        return objects.size();
     }
     
     protected void updateMenuFonts() {
@@ -33,9 +62,17 @@ public final class Scene {
     }
     
     protected void render(Graphics2D g) {
-        for(GameObject obj : objects) {
-            obj.render(g);
-        }
+        for(GameObject object : objects){
+          if(object.getCameraAffected()){
+              int xTrans = (int)(-Camera.getX() * Window.getWidth());
+              int yTrans = (int)(-Camera.getY() * Window.getHeight());
+              g.translate(xTrans, yTrans);
+              object.render(g);
+              g.translate(-xTrans, -yTrans);
+          }else{
+              object.render(g);
+          }
+      }
         
         if(menu != null) {
             menu.render(g);
@@ -50,12 +87,12 @@ public final class Scene {
         menu = null;
     }
     
-    protected void addObject(GameObject obj) {
-        objects.add(obj);
+    protected boolean addObject(GameObject obj) {
+        return objects.add(obj);
     }
     
-    protected void removeObject(GameObject obj) {
-        objects.remove(obj);
+    protected boolean removeObject(GameObject obj) {
+        return objects.remove(obj);
     }
     
     protected void clearObjects() {

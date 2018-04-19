@@ -61,7 +61,7 @@ public class Window {
     protected static void setSize(int width, int height){
         Window.width = width;
         Window.height = height;
-        MenuHandler.updateFonts();
+        Game.updateFonts();
         updateSize();
         frame.pack();
         frame.setLocationRelativeTo(null);

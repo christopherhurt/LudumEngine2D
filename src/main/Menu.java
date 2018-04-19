@@ -14,8 +14,6 @@ public final class Menu {
         this.name = name;
         buttons = new CopyOnWriteArrayList<>();
         labels = new CopyOnWriteArrayList<>();
-        
-        MenuHandler.addMenu(this);
     }
     
     protected void updateFonts(){
