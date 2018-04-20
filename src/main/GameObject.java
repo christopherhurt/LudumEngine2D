@@ -17,7 +17,7 @@ public abstract class GameObject {
     
     protected GameObject(float x, float y, float vX, float vY, float aX, float aY, float w, float h, String id){
         if(w < 0 | h < 0){
-            throw new IllegalArgumentException("Width and height must be greater than zero");
+            throw new IllegalArgumentException("Width and height must not be negative");
         }
         this.x = x;
         this.y = y;

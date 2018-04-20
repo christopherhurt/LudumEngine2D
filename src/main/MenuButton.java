@@ -1,20 +1,13 @@
 package main;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 
-public class MenuButton {
+public abstract class MenuButton {
     
     private MenuLabel label;
     private float x, y, w, h;
-    private Color bodyColor;
-    private Color hoverColor;
-    private Color clickedColor;
-    private float borderThickness;
-    private float cornerRounding;
     private String id;
     
     private boolean wasPressed;
@@ -23,17 +16,12 @@ public class MenuButton {
     private boolean isHeld;
     private boolean isReleased;
     
-    public MenuButton(MenuLabel label, float x, float y, float w, float h, Color bodyColor, Color hoverColor, Color clickedColor, float borderThickness, float cornerRounding, String id){
+    public MenuButton(MenuLabel label, float x, float y, float w, float h, String id){
         this.label = label;
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
-        this.bodyColor = bodyColor;
-        this.hoverColor = hoverColor;
-        this.clickedColor = clickedColor;
-        this.borderThickness = borderThickness;
-        this.cornerRounding = cornerRounding;
         this.id = id;
         
         wasPressed = false;
@@ -79,24 +67,7 @@ public class MenuButton {
         }
     }
     
-    protected void render(Graphics2D g){
-        Color currentColor;
-        
-        if(isHeld){
-            currentColor = clickedColor;
-        }else if(isHovered){
-            currentColor = hoverColor;
-        }else{
-            currentColor = label.getColor();
-        }
-        
-        g.setColor(bodyColor);
-        g.fillRoundRect((int)(x * Window.getWidth()), (int)(y * Window.getHeight()), (int)(w * Window.getWidth()), (int)(h * Window.getHeight()), (int)(cornerRounding * Window.getWidth()), (int)(cornerRounding * Window.getWidth()));
-        g.setColor(currentColor);
-        g.setStroke(new BasicStroke(borderThickness * Window.getWidth()));
-        g.drawRoundRect((int)(x * Window.getWidth()), (int)(y * Window.getHeight()), (int)(w * Window.getWidth()), (int)(h * Window.getHeight()), (int)(cornerRounding * Window.getWidth()), (int)(cornerRounding * Window.getWidth()));
-        label.render(g, currentColor);
-    }
+    protected abstract void render(Graphics2D g);
     
     public MenuLabel getLabel(){
         return label;
