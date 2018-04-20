@@ -17,7 +17,7 @@ public class Game {
     private static Color clearColor = null;
     private static boolean gamePaused = false;
     private static String resourcesFolder = "res";
-    private static List<Scene> scenes = null;
+    private static List<Scene> scenes = new CopyOnWriteArrayList<>();
     private static Scene currentScene = null;
     
     private Game(){}
@@ -33,7 +33,6 @@ public class Game {
         }
         
         canvas = new Canvas();
-        scenes = new CopyOnWriteArrayList<>();
         Input inputListener = new Input();
         canvas.addKeyListener(inputListener);
         canvas.addMouseListener(inputListener);
