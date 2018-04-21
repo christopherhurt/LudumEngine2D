@@ -39,7 +39,12 @@ public class ColoredMenuButton extends MenuButton {
         g.setColor(currentColor);
         g.setStroke(new BasicStroke(borderThickness * Window.getWidth()));
         g.drawRoundRect((int)(getX() * Window.getWidth()), (int)(getY() * Window.getHeight()), (int)(getWidth() * Window.getWidth()), (int)(getHeight() * Window.getHeight()), (int)(cornerRounding * Window.getWidth()), (int)(cornerRounding * Window.getWidth()));
-        getLabel().render(g, currentColor);
+        
+        MenuLabel label = getLabel();
+        
+        if(label != null) {
+            label.render(g, currentColor);
+        }
     }
     
 }

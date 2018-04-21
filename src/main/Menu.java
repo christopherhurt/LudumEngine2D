@@ -18,7 +18,11 @@ public final class Menu {
     
     protected void updateFonts(){
         for(MenuButton button : buttons){
-            button.getLabel().updateFont();
+            MenuLabel label = button.getLabel();
+            
+            if(label != null) {
+                label.updateFont();
+            }
         }
         for(MenuLabel label : labels){
             label.updateFont();
