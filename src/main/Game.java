@@ -141,6 +141,14 @@ public class Game {
         return currentScene.getObjectCount();
     }
     
+    public static String getCurrentScene() {
+        if(currentScene == null) {
+            return null;
+        } else {
+            return currentScene.getID();
+        }
+    }
+    
     public static boolean setCurrentScene(String sceneID) {
         if(sceneID == null) {
             return false;
