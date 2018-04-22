@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -192,6 +193,10 @@ public class Game {
     
     public static Point getMouseLocation(){
         return canvas.getMousePosition();
+    }
+    
+    public static void setCursor(Cursor cursor) {
+        canvas.setCursor(cursor);
     }
     
     private static void begin(){
