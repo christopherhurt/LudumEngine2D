@@ -45,6 +45,16 @@ public class Game {
         begin();
     }
     
+    public static List<GameObject> getObjectList(String sceneID) {
+        for(Scene scene : scenes) {
+            if(scene.getID().equals(sceneID)) {
+                return scene.getObjectList();
+            }
+        }
+        
+        return null;
+    }
+    
     public static boolean createScene(String sceneID) {
         for(Scene scene : scenes) {
             if(scene.getID().equals(sceneID)) {

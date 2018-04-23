@@ -51,6 +51,10 @@ public final class Scene {
       }
     }
     
+    public List<GameObject> getObjectList() {
+        return objects;
+    }
+    
     protected int getObjectCount() {
         return objects.size();
     }
