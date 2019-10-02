@@ -238,8 +238,7 @@ public class Game {
     private static void update(){
         Input.update();
         if(!gamePaused){
-            LinearInterpolator.update();
-            Camera.update();
+            FreeCamera.update();
         }
         currentScene.update();
     }

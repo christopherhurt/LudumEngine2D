@@ -5,50 +5,92 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Represents a file that can save data in key-value pairs.
+ *
+ * @author Chris Hurt
+ * @version 10.01.19
+ */
 public class SaveFile {
-    
-    private File file;
-    
-    public SaveFile(String relativePath) {
-        file = new File(System.getProperty("user.dir") + "/" + relativePath);
+
+    /** The character used to separate keys from values */
+    private static final char SEPARATOR = ':';
+
+    private File mFile;
+
+    /**
+     * Constructor.
+     *
+     * @param pRelativePath the path of the save file relative to the executable
+     */
+    public SaveFile(String pRelativePath) {
+        mFile = new File(System.getProperty("user.dir") + "/" + pRelativePath);
     }
-    
-    public List<String> readLines() {
-        List<String> lines = new ArrayList<>();
-        Scanner sc = null;
-        
-        try{
-            sc = new Scanner(file);
-        }catch(FileNotFoundException e){
-            e.printStackTrace();
-        }
-        
-        while(sc.hasNext()) {
-            String line = sc.nextLine();
-            lines.add(line);
-        }
-        
-        sc.close();
-        return lines;
-    }
-    
-    public void writeLines(List<String> lines) {
-        try{
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-            
-            for(String line : lines) {
-                bw.write(line + "\n");
+
+    /**
+     * Reads in data as a map of key-value pairs.
+     *
+     * @return the map of key-value pairs in the file.
+     */
+    public Map<String, String> read() {
+        Map<String, String> data = new HashMap<>();
+
+        try {
+            Scanner reader = new Scanner(mFile);
+
+            while (reader.hasNext()) {
+                String line = reader.nextLine();
+                String[] pair = line.split(Character.toString(SEPARATOR));
+
+                if (pair.length != 2) {
+                    throw new IllegalStateException("Invalid line while reading file " + mFile.getName());
+                }
+
+                data.put(pair[0], pair[1]);
             }
-            
-            bw.flush();
-            bw.close();
-        }catch(IOException e){
+
+            reader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
+    /**
+     * Writes a map of key-value pairs to disk.
+     *
+     * @param pData the key-value pairs
+     */
+    public void write(Map<String, String> pData) {
+        // Separator character can only be present between the keys and values
+        pData.forEach((pKey, pValue) -> {
+            if (pKey.indexOf(SEPARATOR) > -1 || pValue.indexOf(SEPARATOR) > -1) {
+                throw new IllegalArgumentException("Tried to write data containing separator character " + SEPARATOR);
+            }
+        });
+
+        try {
+            Writer writer = new BufferedWriter(new FileWriter(mFile));
+
+            pData.forEach((pKey, pValue) -> {
+                try {
+                    writer.write(pKey + SEPARATOR + pValue);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
 }

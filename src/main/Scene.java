@@ -68,8 +68,8 @@ public final class Scene {
     protected void render(Graphics2D g) {
         for(GameObject object : objects){
           if(object.getCameraAffected()){
-              int xTrans = (int)(-Camera.getX() * Window.getWidth());
-              int yTrans = (int)(-Camera.getY() * Window.getHeight());
+              int xTrans = (int)(-FreeCamera.getX() * Window.getWidth());
+              int yTrans = (int)(-FreeCamera.getY() * Window.getHeight());
               g.translate(xTrans, yTrans);
               object.render(g);
               g.translate(-xTrans, -yTrans);

@@ -156,7 +156,7 @@ public abstract class GameObject {
     }
     
     public float getX(){
-        return x + (cameraAffected ? 0 : Camera.getX());
+        return x + (cameraAffected ? 0 : FreeCamera.getX());
     }
     
     final float getRenderX(){
@@ -168,7 +168,7 @@ public abstract class GameObject {
     }
     
     public float getY(){
-        return y + (cameraAffected ? 0 : Camera.getY());
+        return y + (cameraAffected ? 0 : FreeCamera.getY());
     }
     
     final float getRenderY(){

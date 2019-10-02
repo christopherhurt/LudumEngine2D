@@ -52,7 +52,7 @@ public class Physics {
     
     private static void adjustBoundsForCamera(GameObject obj, Rectangle bounds){
         if(!obj.getCameraAffected()){
-            bounds.setBounds((int)(bounds.getX() + Camera.getX() * Window.getWidth()), (int)(bounds.getY() + Camera.getY() * Window.getHeight()),
+            bounds.setBounds((int)(bounds.getX() + FreeCamera.getX() * Window.getWidth()), (int)(bounds.getY() + FreeCamera.getY() * Window.getHeight()),
                 (int)bounds.getWidth(), (int)bounds.getHeight());
         }
     }
