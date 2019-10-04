@@ -124,7 +124,16 @@ public final class Window {
      */
     public static synchronized Optional<Point2D.Double> getWorldMouseLocation() {
         checkInitialization();
-        return null; // TODO
+        Optional<Point2D.Double> screenLocation = getScreenMouseLocation();
+
+        if (screenLocation.isPresent()) {
+            ACamera camera = Game.getCurrentScene().getCamera();
+            double worldX = camera.getX() + (screenLocation.get().getX() - 0.5) * Window.getAspectRatio();
+            double worldY = camera.getY() + (screenLocation.get().getY() - 0.5);
+            return Optional.of(new Point2D.Double(worldX, worldY));
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**

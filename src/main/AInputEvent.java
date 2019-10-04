@@ -37,6 +37,7 @@ public abstract class AInputEvent extends AEvent {
      *         object does not have a Transform component attached
      */
     public Optional<Point2D.Double> getPointRelativeToGameObject(GameObject pGameObject) {
+        // TODO: change up where this is called from
         if (mScreenMouseLocation.isPresent()) {
             if (pGameObject.getTransform().isPresent() && pGameObject.getResolvedTransform().isPresent()) {
                 Transform transform = pGameObject.getResolvedTransform().get();

@@ -35,88 +35,49 @@ public final class Game {
         sFpsCap = pFpsCap;
         setCurrentScene(pInitialScene);
 
-//        new Thread(() -> {
+        new Thread(() -> {
             // A copy of the objects list is made in case this event modifies the game objects in the scene
             new GameEvent(EventType.GAME_START, getCurrentScene()).fire(getCurrentScene().getCopyOfObjects());
 
+            double lastCapCheck = Time.currentTime();
+            double timeSinceLastCapCheck = 0d;
 
+            double lastSecondCheck = Time.currentTime();
+            double secondCounter = 0d;
+            int frameCount = 0;
 
-            // TODO: check this
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    double lastCapCheck = Time.currentTime();
-                    double timeSinceLastCapCheck = 0d;
+            while (true) {
+                double currentTime = Time.currentTime();
 
-                    double lastSecondCheck = Time.currentTime();
-                    double secondCounter = 0d;
-                    int frameCount = 0;
+                // Synchronize with fps cap
+                if (sFpsCap != null) {
+                    timeSinceLastCapCheck += (currentTime - lastCapCheck);
+                    lastCapCheck = currentTime;
 
-                    double currentTime = Time.currentTime();
-
-                    // Synchronize with fps cap
-                    if (sFpsCap != null) {
-                        timeSinceLastCapCheck += (currentTime - lastCapCheck);
-                        lastCapCheck = currentTime;
-
-                        if (timeSinceLastCapCheck < 1d / sFpsCap) {
-                            return;
-                        } else {
-                            timeSinceLastCapCheck = 0d;
-                        }
-                    }
-
-                    update();
-                    render();
-
-                    // Update fps counter
-                    if (Debug.isEnabled()) {
-                        frameCount++;
-                        secondCounter += (currentTime - lastSecondCheck);
-                        lastSecondCheck = currentTime;
-
-                        if (secondCounter >= 1d) {
-                            System.out.println("FPS: " + frameCount);
-                            frameCount = 0;
-                            secondCounter = 0d;
-                        }
+                    if (timeSinceLastCapCheck < 1d / sFpsCap) {
+                        continue;
+                    } else {
+                        timeSinceLastCapCheck = 0d;
                     }
                 }
-            };
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(task, 0, 1);
-//            while (true) {
-//                double currentTime = Time.currentTime();
-//
-//                // Synchronize with fps cap
-//                if (sFpsCap != null) {
-//                    timeSinceLastCapCheck += (currentTime - lastCapCheck);
-//                    lastCapCheck = currentTime;
-//
-//                    if (timeSinceLastCapCheck < 1d / sFpsCap) {
-//                        continue;
-//                    } else {
-//                        timeSinceLastCapCheck = 0d;
-//                    }
-//                }
-//
-//                update();
-//                render();
-//
-//                // Update fps counter
-//                if (Debug.isEnabled()) {
-//                    frameCount++;
-//                    secondCounter += (currentTime - lastSecondCheck);
-//                    lastSecondCheck = currentTime;
-//
-//                    if (secondCounter >= 1d) {
-//                        System.out.println("FPS: " + frameCount);
-//                        frameCount = 0;
-//                        secondCounter = 0d;
-//                    }
-//                }
-//            }
-//        }).start();
+
+                update();
+                render();
+
+                // Update fps counter
+                if (Debug.isEnabled()) {
+                    frameCount++;
+                    secondCounter += (currentTime - lastSecondCheck);
+                    lastSecondCheck = currentTime;
+
+                    if (secondCounter >= 1d) {
+                        System.out.println("FPS: " + frameCount);
+                        frameCount = 0;
+                        secondCounter = 0d;
+                    }
+                }
+            }
+        }).start();
     }
 
     /**

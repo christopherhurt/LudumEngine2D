@@ -62,7 +62,8 @@ public final class MouseEvent extends AInputEvent {
      */
     @Override
     boolean isValidEventType(EventType pType) {
-        return pType == EventType.MOUSE_BUTTON_PRESSED || pType == EventType.MOUSE_BUTTON_RELEASED;
+        return pType == EventType.MOUSE_BUTTON_PRESSED || pType == EventType.MOUSE_BUTTON_RELEASED
+                || pType == EventType.MOUSE_MOVED;
     }
 
     /**

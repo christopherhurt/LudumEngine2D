@@ -27,7 +27,8 @@ public enum EventType {
 
     // Mouse events
     MOUSE_BUTTON_PRESSED("MOUSE_BUTTON_PRESSED"),
-    MOUSE_BUTTON_RELEASED("MOUSE_BUTTON_RELEASED");
+    MOUSE_BUTTON_RELEASED("MOUSE_BUTTON_RELEASED"),
+    MOUSE_MOVED("MOUSE_MOVED");
 
     private String mStringRepresentation;
 
