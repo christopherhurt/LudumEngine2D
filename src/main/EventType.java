@@ -19,7 +19,15 @@ public enum EventType {
     ADD_TO_SCENE("ADD_TO_SCENE"),
     REMOVE_FROM_SCENE("REMOVE_FROM_SCENE"),
     UPDATE("UPDATE"),
-    LATE_UPDATE("LATE_UPDATE");
+    LATE_UPDATE("LATE_UPDATE"),
+
+    // Key events
+    KEY_PRESSED("KEY_PRESSED"),
+    KEY_RELEASED("KEY_RELEASED"),
+
+    // Mouse events
+    MOUSE_BUTTON_PRESSED("MOUSE_BUTTON_PRESSED"),
+    MOUSE_BUTTON_RELEASED("MOUSE_BUTTON_RELEASED");
 
     private String mStringRepresentation;
 

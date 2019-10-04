@@ -4,9 +4,12 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Represents the window used to display the game.
@@ -17,6 +20,11 @@ import java.io.IOException;
 public final class Window {
 
     private static final Canvas CANVAS = new Canvas();
+
+    static {
+        CANVAS.addKeyListener(Listeners.KEY_LISTENER);
+        CANVAS.addMouseListener(Listeners.MOUSE_LISTENER);
+    }
 
     private static boolean sInitialized = false;
     private static volatile boolean sClosing = false;
@@ -91,6 +99,32 @@ public final class Window {
         checkInitialization();
         Dimension dimension = getDimension();
         return dimension.getWidth() / dimension.getHeight();
+    }
+
+    /**
+     * @return an optional of the mouse location in normalized screen space relative to the dimension of the window
+     *         and its top-left corner, empty if the mouse is not over the window
+     */
+    public static synchronized Optional<Point2D.Double> getScreenMouseLocation() {
+        checkInitialization();
+        Point windowLocation = CANVAS.getMousePosition();
+
+        if (windowLocation == null) {
+            return Optional.empty();
+        } else {
+            Dimension windowDimension = getDimension();
+            return Optional.of(new Point2D.Double(windowLocation.getX() / windowDimension.getWidth(),
+                    windowLocation.getY() / windowDimension.getHeight()));
+        }
+    }
+
+    /**
+     * @return an optional of the mouse location in world space relative to the height of the window, empty if the mouse
+     *         is not over the window
+     */
+    public static synchronized Optional<Point2D.Double> getWorldMouseLocation() {
+        checkInitialization();
+        return null; // TODO
     }
 
     /**

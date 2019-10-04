@@ -3,6 +3,9 @@ package main;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Main class for the game engine. The game loop begins its execution here.
@@ -12,7 +15,7 @@ import java.util.Optional;
  */
 public final class Game {
 
-    private static Scene sCurrentScene;
+    private static final AtomicReference<Scene> sCurrentScene = new AtomicReference<>();
     private static Integer sFpsCap;
 
     /**
@@ -32,49 +35,88 @@ public final class Game {
         sFpsCap = pFpsCap;
         setCurrentScene(pInitialScene);
 
-        new Thread(() -> {
+//        new Thread(() -> {
             // A copy of the objects list is made in case this event modifies the game objects in the scene
-            new GameEvent(EventType.GAME_START, sCurrentScene).fire(sCurrentScene.getCopyOfObjects());
+            new GameEvent(EventType.GAME_START, getCurrentScene()).fire(getCurrentScene().getCopyOfObjects());
 
-            double lastCapCheck = Time.currentTime();
-            double timeSinceLastCapCheck = 0d;
 
-            double lastSecondCheck = Time.currentTime();
-            double secondCounter = 0d;
-            int frameCount = 0;
 
-            while (true) {
-                double currentTime = Time.currentTime();
+            // TODO: check this
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    double lastCapCheck = Time.currentTime();
+                    double timeSinceLastCapCheck = 0d;
 
-                // Synchronize with fps cap
-                if (sFpsCap != null) {
-                    timeSinceLastCapCheck += (currentTime - lastCapCheck);
-                    lastCapCheck = currentTime;
+                    double lastSecondCheck = Time.currentTime();
+                    double secondCounter = 0d;
+                    int frameCount = 0;
 
-                    if (timeSinceLastCapCheck < 1d / sFpsCap) {
-                        continue;
-                    } else {
-                        timeSinceLastCapCheck = 0d;
+                    double currentTime = Time.currentTime();
+
+                    // Synchronize with fps cap
+                    if (sFpsCap != null) {
+                        timeSinceLastCapCheck += (currentTime - lastCapCheck);
+                        lastCapCheck = currentTime;
+
+                        if (timeSinceLastCapCheck < 1d / sFpsCap) {
+                            return;
+                        } else {
+                            timeSinceLastCapCheck = 0d;
+                        }
+                    }
+
+                    update();
+                    render();
+
+                    // Update fps counter
+                    if (Debug.isEnabled()) {
+                        frameCount++;
+                        secondCounter += (currentTime - lastSecondCheck);
+                        lastSecondCheck = currentTime;
+
+                        if (secondCounter >= 1d) {
+                            System.out.println("FPS: " + frameCount);
+                            frameCount = 0;
+                            secondCounter = 0d;
+                        }
                     }
                 }
-
-                update();
-                render();
-
-                // Update fps counter
-                if (Debug.isEnabled()) {
-                    frameCount++;
-                    secondCounter += (currentTime - lastSecondCheck);
-                    lastSecondCheck = currentTime;
-
-                    if (secondCounter >= 1d) {
-                        System.out.println("FPS: " + frameCount);
-                        frameCount = 0;
-                        secondCounter = 0d;
-                    }
-                }
-            }
-        }).start();
+            };
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(task, 0, 1);
+//            while (true) {
+//                double currentTime = Time.currentTime();
+//
+//                // Synchronize with fps cap
+//                if (sFpsCap != null) {
+//                    timeSinceLastCapCheck += (currentTime - lastCapCheck);
+//                    lastCapCheck = currentTime;
+//
+//                    if (timeSinceLastCapCheck < 1d / sFpsCap) {
+//                        continue;
+//                    } else {
+//                        timeSinceLastCapCheck = 0d;
+//                    }
+//                }
+//
+//                update();
+//                render();
+//
+//                // Update fps counter
+//                if (Debug.isEnabled()) {
+//                    frameCount++;
+//                    secondCounter += (currentTime - lastSecondCheck);
+//                    lastSecondCheck = currentTime;
+//
+//                    if (secondCounter >= 1d) {
+//                        System.out.println("FPS: " + frameCount);
+//                        frameCount = 0;
+//                        secondCounter = 0d;
+//                    }
+//                }
+//            }
+//        }).start();
     }
 
     /**
@@ -82,7 +124,7 @@ public final class Game {
      */
     private static void update() {
         Time.update();
-        sCurrentScene.update();
+        getCurrentScene().update();
     }
 
     /**
@@ -92,7 +134,7 @@ public final class Game {
         BufferStrategy bufferStrategy = Window.getCanvas().getBufferStrategy();
         Graphics2D graphics = (Graphics2D)bufferStrategy.getDrawGraphics();
 
-        sCurrentScene.render(graphics);
+        getCurrentScene().render(graphics);
 
         graphics.dispose();
         bufferStrategy.show();
@@ -102,7 +144,7 @@ public final class Game {
      * @return the current game scene
      */
     public static Scene getCurrentScene() {
-        return sCurrentScene;
+        return sCurrentScene.get();
     }
 
     /**
@@ -112,14 +154,14 @@ public final class Game {
      */
     public static void setCurrentScene(Scene pScene) {
         // Unload previous scene
-        if (sCurrentScene != null) {
-            new GameEvent(EventType.SCENE_UNLOAD, sCurrentScene).fire(sCurrentScene.getCopyOfObjects());
+        if (getCurrentScene() != null) {
+            new GameEvent(EventType.SCENE_UNLOAD, getCurrentScene()).fire(getCurrentScene().getCopyOfObjects());
         }
 
-        sCurrentScene = pScene;
+        sCurrentScene.set(pScene);
 
         // Load new scene
-        new GameEvent(EventType.SCENE_LOAD, sCurrentScene).fire(sCurrentScene.getCopyOfObjects());
+        new GameEvent(EventType.SCENE_LOAD, getCurrentScene()).fire(getCurrentScene().getCopyOfObjects());
     }
 
     /**
@@ -143,7 +185,7 @@ public final class Game {
      */
     public static synchronized void close() {
         // A copy of the objects list is made in case this event modifies the game objects in the scene
-        new GameEvent(EventType.GAME_CLOSE, sCurrentScene).fire(sCurrentScene.getCopyOfObjects());
+        new GameEvent(EventType.GAME_CLOSE, getCurrentScene()).fire(getCurrentScene().getCopyOfObjects());
 
         // This should be called last, as it terminates the game
         Window.destroy();

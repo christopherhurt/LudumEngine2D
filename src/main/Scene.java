@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -17,6 +19,14 @@ import java.util.stream.Collectors;
  * @version 10.03.19
  */
 public final class Scene {
+
+    /**
+     * The list of pending input events. This was made thread-safe because events will be enqueued from the main input
+     * thread and processed on the game thread.
+     * This queue is static because user inputs should be processed across all scenes, but contained in the Scene class
+     * because processing of these events occurs here by the current scene.
+     */
+    private static final Queue<AInputEvent> PENDING_INPUT_EVENTS = new ConcurrentLinkedQueue<>();
 
     private List<GameObject> mGameObjects = new LinkedList<>();
     private ACamera mCamera;
@@ -39,11 +49,19 @@ public final class Scene {
         // Sort the game objects by z-index and parentage
         sortGameObjectList(mGameObjects);
 
+        // Update kinematics components
+        updateKinematics(mGameObjects);
+
         // Resolve overall transforms based on parentage
         resolveTransforms(mGameObjects);
 
-        // Update kinematics components
-        updateKinematics(mGameObjects);
+        // Process all pending input events. This needs to happen after transforms have been resolved and before other
+        // update events occur.
+        // A copy of the scene's game object list is made after every event is processed in the case an event makes
+        // modifications to the scene
+        while (!PENDING_INPUT_EVENTS.isEmpty()) {
+            PENDING_INPUT_EVENTS.remove().fire(getCopyOfObjects());
+        }
 
         // Update game objects
         // A copy of the game objects list is made in case one of the events modifies the game objects in the scene
@@ -140,6 +158,15 @@ public final class Scene {
      */
     List<GameObject> getCopyOfObjects() {
         return new LinkedList<>(mGameObjects);
+    }
+
+    /**
+     * Enqueues an input event to be processed by the current scene at the start of the next frame.
+     *
+     * @param pEvt the event to enqueue
+     */
+    static void enqueueInputEvent(AInputEvent pEvt) {
+        PENDING_INPUT_EVENTS.add(pEvt);
     }
 
     /**
