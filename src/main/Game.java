@@ -33,15 +33,15 @@ public final class Game {
         setCurrentScene(pInitialScene);
 
         new Thread(() -> {
-            double lastCapCheck = Time.currentTimePrecise();
+            double lastCapCheck = Time.currentTime();
             double timeSinceLastCapCheck = 0d;
 
-            double lastSecondCheck = Time.currentTimePrecise();
+            double lastSecondCheck = Time.currentTime();
             double secondCounter = 0d;
             int frameCount = 0;
 
             while (true) {
-                double currentTime = Time.currentTimePrecise();
+                double currentTime = Time.currentTime();
 
                 // Synchronize with fps cap
                 if (sFpsCap != null) {

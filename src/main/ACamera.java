@@ -8,8 +8,8 @@ package main;
  */
 public abstract class ACamera {
 
-    private float mX;
-    private float mY;
+    private double mX;
+    private double mY;
 
     /**
      * Constructor.
@@ -17,7 +17,7 @@ public abstract class ACamera {
      * @param pX the initial x position of the camera
      * @param pY the initial y position of the camera
      */
-    ACamera(float pX, float pY) {
+    ACamera(double pX, double pY) {
         mX = pX;
         mY = pY;
     }
@@ -30,14 +30,14 @@ public abstract class ACamera {
     /**
      * @return the x position
      */
-    public final float getX() {
+    public final double getX() {
         return mX;
     }
 
     /**
      * @return the y position
      */
-    public final float getY() {
+    public final double getY() {
         return mY;
     }
 
@@ -46,7 +46,7 @@ public abstract class ACamera {
      *
      * @param pX the new x position
      */
-    public final void setX(float pX) {
+    public final void setX(double pX) {
         mX = pX;
     }
 
@@ -55,7 +55,7 @@ public abstract class ACamera {
      *
      * @param pY the new y position
      */
-    public final void setY(float pY) {
+    public final void setY(double pY) {
         mY = pY;
     }
 

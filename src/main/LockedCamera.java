@@ -9,8 +9,8 @@ package main;
  */
 public final class LockedCamera extends ACamera {
 
-    private float mOffsetX;
-    private float mOffsetY;
+    private double mOffsetX;
+    private double mOffsetY;
     private GameObject mTarget;
 
     /**
@@ -26,7 +26,7 @@ public final class LockedCamera extends ACamera {
      * @param pTarget the game object to lock to
      */
     public LockedCamera(GameObject pTarget) {
-        this(pTarget, 0.0f, 0.0f);
+        this(pTarget, 0d, 0d);
     }
 
     /**
@@ -36,8 +36,8 @@ public final class LockedCamera extends ACamera {
      * @param pOffsetX the x offset of the camera from the game object
      * @param pOffsetY the y offset of the camera from the game object
      */
-    public LockedCamera(GameObject pTarget, float pOffsetX, float pOffsetY) {
-        super(0.0f, 0.0f);
+    public LockedCamera(GameObject pTarget, double pOffsetX, double pOffsetY) {
+        super(0d, 0d);
         mTarget = pTarget;
         mOffsetX = pOffsetX;
         mOffsetY = pOffsetY;
@@ -49,8 +49,8 @@ public final class LockedCamera extends ACamera {
      * @param pX the initial x position of the camera
      * @param pY the initial y position of the camera
      */
-    public LockedCamera(float pX, float pY) {
-        this(pX, pY, 0.0f, 0.0f);
+    public LockedCamera(double pX, double pY) {
+        this(pX, pY, 0d, 0d);
     }
 
     /**
@@ -61,7 +61,7 @@ public final class LockedCamera extends ACamera {
      * @param pOffsetX the x offset of the camera from the target
      * @param pOffsetY the y offset of the camera from the target
      */
-    public LockedCamera(float pX, float pY, float pOffsetX, float pOffsetY) {
+    public LockedCamera(double pX, double pY, double pOffsetX, double pOffsetY) {
         super(pX, pY);
         mOffsetX = pOffsetX;
         mOffsetY = pOffsetY;
@@ -112,7 +112,7 @@ public final class LockedCamera extends ACamera {
     /**
      * @return the x offset of the camera from the target
      */
-    public float getOffsetX() {
+    public double getOffsetX() {
         return mOffsetX;
     }
 
@@ -121,14 +121,14 @@ public final class LockedCamera extends ACamera {
      *
      * @param pOffsetX the x offset to be set to
      */
-    public void setOffsetX(float pOffsetX) {
+    public void setOffsetX(double pOffsetX) {
         mOffsetX = pOffsetX;
     }
 
     /**
      * @return the y offset of the camera from the target
      */
-    public float getOffsetY() {
+    public double getOffsetY() {
         return mOffsetY;
     }
 
@@ -137,7 +137,7 @@ public final class LockedCamera extends ACamera {
      *
      * @param pOffsetY the y offset to be set to
      */
-    public void setOffsetY(float pOffsetY) {
+    public void setOffsetY(double pOffsetY) {
         mOffsetY = pOffsetY;
     }
 

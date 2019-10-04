@@ -8,18 +8,18 @@ package main;
  */
 public final class Kinematics {
 
-    private float mVelX;
-    private float mVelY;
-    private float mAngVel;
-    private float mAccX;
-    private float mAccY;
-    private float mAngAcc;
+    private double mVelX;
+    private double mVelY;
+    private double mAngVel;
+    private double mAccX;
+    private double mAccY;
+    private double mAngAcc;
 
     /**
      * Default constructor.
      */
     public Kinematics() {
-        this(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        this(0d, 0d, 0d, 0d, 0d, 0d);
     }
 
     /**
@@ -32,7 +32,7 @@ public final class Kinematics {
      * @param pAccY the y acceleration
      * @param pAngAcc the angular acceleration
      */
-    public Kinematics(float pVelX, float pVelY, float pAngVel, float pAccX, float pAccY, float pAngAcc) {
+    public Kinematics(double pVelX, double pVelY, double pAngVel, double pAccX, double pAccY, double pAngAcc) {
         mVelX = pVelX;
         mVelY = pVelY;
         mAngVel = pAngVel;
@@ -53,17 +53,17 @@ public final class Kinematics {
         mAngVel += mAngAcc * Time.getDelta();
 
         pTransform.setX(pTransform.getX() + mVelX * Time.getDelta()
-                + mAccX * 0.5f * Time.getDelta() * Time.getDelta());
+                + mAccX * 0.5 * Time.getDelta() * Time.getDelta());
         pTransform.setY(pTransform.getY() + mVelY * Time.getDelta()
-                + mAccY * 0.5f * Time.getDelta() * Time.getDelta());
+                + mAccY * 0.5 * Time.getDelta() * Time.getDelta());
         pTransform.setRotation(pTransform.getRotation() + mAngVel * Time.getDelta()
-                + mAngAcc * 0.5f * Time.getDelta() * Time.getDelta());
+                + mAngAcc * 0.5 * Time.getDelta() * Time.getDelta());
     }
 
     /**
      * @return the x velocity
      */
-    public float getVelX() {
+    public double getVelX() {
         return mVelX;
     }
 
@@ -72,14 +72,14 @@ public final class Kinematics {
      *
      * @param pVelX the x velocity to be set to
      */
-    public void setVelX(float pVelX) {
+    public void setVelX(double pVelX) {
         mVelX = pVelX;
     }
 
     /**
      * @return the y velocity
      */
-    public float getVelY() {
+    public double getVelY() {
         return mVelY;
     }
 
@@ -88,14 +88,14 @@ public final class Kinematics {
      *
      * @param pVelY the y velocity to be set to
      */
-    public void setVelY(float pVelY) {
+    public void setVelY(double pVelY) {
         mVelY = pVelY;
     }
 
     /**
      * @return the angular velocity
      */
-    public float getAngVel() {
+    public double getAngVel() {
         return mAngVel;
     }
 
@@ -104,14 +104,14 @@ public final class Kinematics {
      *
      * @param pAngVel the angular velocity to be set to
      */
-    public void setAngVel(float pAngVel) {
+    public void setAngVel(double pAngVel) {
         mAngVel = pAngVel;
     }
 
     /**
      * @return the x acceleration
      */
-    public float getAccX() {
+    public double getAccX() {
         return mAccX;
     }
 
@@ -120,14 +120,14 @@ public final class Kinematics {
      *
      * @param pAccX the x acceleration to be set to
      */
-    public void setAccX(float pAccX) {
+    public void setAccX(double pAccX) {
         mAccX = pAccX;
     }
 
     /**
      * @return the y acceleration
      */
-    public float getAccY() {
+    public double getAccY() {
         return mAccY;
     }
 
@@ -136,14 +136,14 @@ public final class Kinematics {
      *
      * @param pAccY the y acceleration to be set to
      */
-    public void setAccY(float pAccY) {
+    public void setAccY(double pAccY) {
         mAccY = pAccY;
     }
 
     /**
      * @return the angular acceleration
      */
-    public float getAngAcc() {
+    public double getAngAcc() {
         return mAngAcc;
     }
 
@@ -152,7 +152,7 @@ public final class Kinematics {
      *
      * @param pAngAcc the angular acceleration to be set to
      */
-    public void setAngAcc(float pAngAcc) {
+    public void setAngAcc(double pAngAcc) {
         mAngAcc = pAngAcc;
     }
 

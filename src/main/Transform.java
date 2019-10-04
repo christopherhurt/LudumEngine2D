@@ -8,17 +8,17 @@ package main;
  */
 public final class Transform {
 
-    private float mX;
-    private float mY;
-    private float mWidth;
-    private float mHeight;
-    private float mRotation;
+    private double mX;
+    private double mY;
+    private double mWidth;
+    private double mHeight;
+    private double mRotation;
 
     /**
      * Default constructor.
      */
     public Transform() {
-        this(0.0f, 0.0f, 0.1f, 0.1f, 0.0f);
+        this(0d, 0d, 0.1, 0.1, 0d);
     }
 
     /**
@@ -30,7 +30,7 @@ public final class Transform {
      * @param pHeight the normalized height relative to the height of the window
      * @param pRotation the rotation in degrees
      */
-    public Transform(float pX, float pY, float pWidth, float pHeight, float pRotation) {
+    public Transform(double pX, double pY, double pWidth, double pHeight, double pRotation) {
         mX = pX;
         mY = pY;
         mWidth = pWidth;
@@ -41,7 +41,7 @@ public final class Transform {
     /**
      * @return the x position
      */
-    public float getX() {
+    public double getX() {
         return mX;
     }
 
@@ -50,14 +50,14 @@ public final class Transform {
      *
      * @param pX the x position to be set to
      */
-    public void setX(float pX) {
+    public void setX(double pX) {
         mX = pX;
     }
 
     /**
      * @return the y position
      */
-    public float getY() {
+    public double getY() {
         return mY;
     }
 
@@ -66,14 +66,14 @@ public final class Transform {
      *
      * @param pY the y position to be set to
      */
-    public void setY(float pY) {
+    public void setY(double pY) {
         mY = pY;
     }
 
     /**
      * @return the width
      */
-    public float getWidth() {
+    public double getWidth() {
         return mWidth;
     }
 
@@ -82,14 +82,14 @@ public final class Transform {
      *
      * @param pWidth the width to be set to
      */
-    public void setWidth(float pWidth) {
+    public void setWidth(double pWidth) {
         mWidth = pWidth;
     }
 
     /**
      * @return the height
      */
-    public float getHeight() {
+    public double getHeight() {
         return mHeight;
     }
 
@@ -98,14 +98,14 @@ public final class Transform {
      *
      * @param pHeight the height to be set to
      */
-    public void setHeight(float pHeight) {
+    public void setHeight(double pHeight) {
         mHeight = pHeight;
     }
 
     /**
      * @return the rotation
      */
-    public float getRotation() {
+    public double getRotation() {
         return mRotation;
     }
 
@@ -114,7 +114,7 @@ public final class Transform {
      *
      * @param pRotation the rotation to be set to
      */
-    public void setRotation(float pRotation) {
+    public void setRotation(double pRotation) {
         mRotation = pRotation;
     }
 

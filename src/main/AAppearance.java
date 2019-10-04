@@ -1,6 +1,6 @@
 package main;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 
 /**
  * Abstract class that represents the appearance of a game object. This can be a solid color, texture, animation, etc.

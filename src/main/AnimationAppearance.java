@@ -10,9 +10,9 @@ import java.awt.Graphics2D;
  */
 public final class AnimationAppearance extends AAppearance {
 
-    private float mDuration;
+    private double mDuration;
     private Texture[] mTextures;
-    private float mCurrentIndex;
+    private double mCurrentIndex;
 
     /**
      * Constructor.
@@ -21,7 +21,7 @@ public final class AnimationAppearance extends AAppearance {
      * @param pTextures the textures to be used for rendering the animation in order of appearance, repeated references
      *                  to the same texture within this array are acceptable
      */
-    public AnimationAppearance(float pDuration, Texture... pTextures) {
+    public AnimationAppearance(double pDuration, Texture... pTextures) {
         this(pDuration, 0.0f, pTextures);
     }
 
@@ -34,7 +34,7 @@ public final class AnimationAppearance extends AAppearance {
      * @param pTextures the textures to be used for rendering the animation in order of appearance, repeated references
      *                  to the same texture within this array are acceptable
      */
-    public AnimationAppearance(float pDuration, float pInitialProgress, Texture... pTextures) {
+    public AnimationAppearance(double pDuration, double pInitialProgress, Texture... pTextures) {
         mDuration = pDuration;
         mTextures = pTextures;
 
@@ -60,7 +60,7 @@ public final class AnimationAppearance extends AAppearance {
     /**
      * @return the duration of the animation in seconds
      */
-    public float getDuration() {
+    public double getDuration() {
         return mDuration;
     }
 
@@ -69,7 +69,7 @@ public final class AnimationAppearance extends AAppearance {
      *
      * @param pDuration the duration to be set to in seconds
      */
-    public void setDuration(float pDuration) {
+    public void setDuration(double pDuration) {
         mDuration = pDuration;
     }
 
@@ -77,7 +77,7 @@ public final class AnimationAppearance extends AAppearance {
      * @return the current normalized progress of the animation, where a value of 0 represents the beginning of the
      *         animation and a value of 1 represents the end
      */
-    public float getProgress() {
+    public double getProgress() {
         return mCurrentIndex / mTextures.length;
     }
 
@@ -87,8 +87,8 @@ public final class AnimationAppearance extends AAppearance {
      * @param pProgress the normalized progress of the animation where a value of 0 represents the beginning of the
      *                  animation and a value of 1 represents the end
      */
-    public void setProgress(float pProgress) {
-        float clampedProgress = Math.max(Math.min(pProgress, 1.0f), 0.0f);
+    public void setProgress(double pProgress) {
+        double clampedProgress = Math.max(Math.min(pProgress, 1d), 0d);
         mCurrentIndex = clampedProgress * mTextures.length;
     }
 
@@ -96,7 +96,7 @@ public final class AnimationAppearance extends AAppearance {
      * Restarts the animation from the beginning.
      */
     public void restart() {
-        setProgress(0.0f);
+        setProgress(0d);
     }
 
 }

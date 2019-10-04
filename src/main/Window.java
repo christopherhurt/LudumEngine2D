@@ -85,10 +85,10 @@ public final class Window {
     /**
      * @return the width / height aspect ratio of the window
      */
-    public static float getAspectRatio() {
+    public static double getAspectRatio() {
         checkInitialization();
         Dimension dimension = getDimension();
-        return (float)(dimension.getWidth() / dimension.getHeight());
+        return dimension.getWidth() / dimension.getHeight();
     }
 
     /**
@@ -98,7 +98,7 @@ public final class Window {
      * @param pValue the value to convert
      * @return the converted value in pixels
      */
-    static int normalizedToScreen(float pValue) {
+    static int normalizedToScreen(double pValue) {
         checkInitialization();
         return (int)(pValue * sHeight);
     }

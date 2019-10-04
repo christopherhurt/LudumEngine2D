@@ -9,40 +9,33 @@ package main;
  */
 public final class Time {
 
-    private static double mDelta = 0.0f;
+    private static double mDelta = 0d;
     private static double mLastTime;
 
     static {
-        mLastTime = currentTimeFloat();
+        mLastTime = currentTime();
     }
 
     /**
      * @return the amount of time in seconds since last frame
      */
-    public static float getDelta() {
-        return (float)mDelta;
+    public static double getDelta() {
+        return mDelta;
     }
 
     /**
      * Updates the amount of time passed since last frame.
      */
     static void update() {
-        double currentTime = currentTimeFloat();
+        double currentTime = currentTime();
         mDelta = currentTime - mLastTime;
         mLastTime = currentTime;
     }
 
     /**
-     * @return the current system time in seconds
+     * @return the current time in seconds
      */
-    private static double currentTimeFloat() {
-        return System.currentTimeMillis() / 1000d;
-    }
-
-    /**
-     * @return the precise current time in seconds
-     */
-    static double currentTimePrecise() {
+    static double currentTime() {
         return System.nanoTime() / 1000000000d;
     }
 

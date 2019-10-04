@@ -9,14 +9,14 @@ package main;
  */
 public final class FreeCamera extends ACamera {
 
-    private float mVelX;
-    private float mVelY;
+    private double mVelX;
+    private double mVelY;
 
     /**
      * Default constructor.
      */
     public FreeCamera() {
-        this(0.0f, 0.0f, 0.0f, 0.0f);
+        this(0d, 0d, 0d, 0d);
     }
 
     /**
@@ -27,7 +27,7 @@ public final class FreeCamera extends ACamera {
      * @param pVelX the initial x velocity
      * @param pVelY the initial y velocity
      */
-    public FreeCamera(float pX, float pY, float pVelX, float pVelY) {
+    public FreeCamera(double pX, double pY, double pVelX, double pVelY) {
         super(pX, pY);
         mVelX = pVelX;
         mVelY = pVelY;
@@ -45,14 +45,14 @@ public final class FreeCamera extends ACamera {
     /**
      * @return the x velocity
      */
-    public float getVelX() {
+    public double getVelX() {
         return mVelX;
     }
 
     /**
      * @return the y velocity
      */
-    public float getVelY() {
+    public double getVelY() {
         return mVelY;
     }
 
@@ -61,7 +61,7 @@ public final class FreeCamera extends ACamera {
      *
      * @param pVelX the new x velocity
      */
-    public void setVelX(float pVelX) {
+    public void setVelX(double pVelX) {
         mVelX = pVelX;
     }
 
@@ -70,7 +70,7 @@ public final class FreeCamera extends ACamera {
      *
      * @param pVelY the new y velocity
      */
-    public void setVelY(float pVelY) {
+    public void setVelY(double pVelY) {
         mVelY = pVelY;
     }
 

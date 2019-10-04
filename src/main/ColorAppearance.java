@@ -2,7 +2,6 @@ package main;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 /**
  * Represents a solid color appearance of a game object.
