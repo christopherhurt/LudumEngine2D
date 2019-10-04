@@ -1,28 +1,46 @@
 package main;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
+/**
+ * Represents a texture that can be applied to a render-able game object or menu component.
+ *
+ * @author Chris Hurt
+ * @version 10.03.19
+ */
 public final class Texture {
-    
-    private BufferedImage img;
-    
-    public Texture(String file){
-        file = "/" + file;
-        try{
-            img = ImageIO.read(getClass().getResource(file));
-        }catch(IOException e){
+
+    private BufferedImage mImage;
+
+    /**
+     * Package-private constructor.
+     *
+     * @param pImage the buffered image to use as the texture
+     */
+    Texture(BufferedImage pImage) {
+        mImage = pImage;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param pPath the relative file path of the image to use as the texture
+     */
+    public Texture(String pPath) {
+        try {
+            mImage = ImageIO.read(getClass().getResource("/" + pPath));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    protected Texture(BufferedImage img){
-        this.img = img;
+
+    /**
+     * @return the underlying buffered image
+     */
+    BufferedImage getImage() {
+        return mImage;
     }
-    
-    public BufferedImage getImage(){
-        return img;
-    }
-    
+
 }

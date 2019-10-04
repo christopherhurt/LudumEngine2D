@@ -9,8 +9,8 @@ package main;
  */
 public final class Time {
 
-    private static float mDelta = 0.0f;
-    private static float mLastTime;
+    private static double mDelta = 0.0f;
+    private static double mLastTime;
 
     static {
         mLastTime = currentTimeFloat();
@@ -20,14 +20,14 @@ public final class Time {
      * @return the amount of time in seconds since last frame
      */
     public static float getDelta() {
-        return mDelta;
+        return (float)mDelta;
     }
 
     /**
      * Updates the amount of time passed since last frame.
      */
     static void update() {
-        float currentTime = currentTimeFloat();
+        double currentTime = currentTimeFloat();
         mDelta = currentTime - mLastTime;
         mLastTime = currentTime;
     }
@@ -35,8 +35,19 @@ public final class Time {
     /**
      * @return the current system time in seconds
      */
-    private static float currentTimeFloat() {
-        return System.currentTimeMillis() / 1000.0f;
+    private static double currentTimeFloat() {
+        return System.currentTimeMillis() / 1000d;
+    }
+
+    /**
+     * @return the precise current time in seconds
+     */
+    static double currentTimePrecise() {
+        return System.nanoTime() / 1000000000d;
+    }
+
+    private Time() {
+        // Static class, do not initialize
     }
 
 }

@@ -5,13 +5,9 @@ package main;
  * the game object as it moves.
  *
  * @author Chris Hurt
- * @version 10.01.19
+ * @version 10.03.19
  */
-public final class LockedCamera
-        implements ICamera {
-
-    private float mX = 0.0f;
-    private float mY = 0.0f;
+public final class LockedCamera extends ACamera {
 
     private float mOffsetX;
     private float mOffsetY;
@@ -34,26 +30,67 @@ public final class LockedCamera
     }
 
     /**
-     * Default constructor.
+     * Constructor.
      *
      * @param pTarget the game object to lock to
      * @param pOffsetX the x offset of the camera from the game object
      * @param pOffsetY the y offset of the camera from the game object
      */
     public LockedCamera(GameObject pTarget, float pOffsetX, float pOffsetY) {
+        super(0.0f, 0.0f);
         mTarget = pTarget;
         mOffsetX = pOffsetX;
         mOffsetY = pOffsetY;
     }
 
     /**
-     * Updates the position of the camera to the target's if one is assigned.
+     * Constructor.
+     *
+     * @param pX the initial x position of the camera
+     * @param pY the initial y position of the camera
      */
+    public LockedCamera(float pX, float pY) {
+        this(pX, pY, 0.0f, 0.0f);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param pX the initial x position of the camera
+     * @param pY the initial y position of the camera
+     * @param pOffsetX the x offset of the camera from the target
+     * @param pOffsetY the y offset of the camera from the target
+     */
+    public LockedCamera(float pX, float pY, float pOffsetX, float pOffsetY) {
+        super(pX, pY);
+        mOffsetX = pOffsetX;
+        mOffsetY = pOffsetY;
+        mTarget = null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     void update() {
         if (mTarget != null) {
-            mX = mTarget.getX() + mTarget.getWidth() / 2.0f + mOffsetX;
-            mY = mTarget.getY() + mTarget.getHeight() / 2.0f + mOffsetY;
+            if (mTarget.getTransform().isPresent()) {
+                Transform transform = mTarget.getTransform().get();
+                // TODO: fix glitchiness here
+//                setX(transform.getX() + transform.getWidth() / 2.0f + mOffsetX - 0.5f * Window.getAspectRatio());
+//                setY(transform.getY() + transform.getHeight() / 2.0f + mOffsetY - 0.5f);
+            } else {
+                Debug.warn("Camera is locked to GameObject with id "
+                        + mTarget.getId() + " that does not have a Transform component");
+            }
         }
+    }
+
+    /**
+     * @return the game object currently being targeted by the camera
+     */
+    public GameObject getTarget() {
+        return mTarget;
     }
 
     /**
@@ -73,35 +110,35 @@ public final class LockedCamera
     }
 
     /**
-     * {@inheritDoc}
+     * @return the x offset of the camera from the target
      */
-    @Override
-    public float getX() {
-        return mX;
+    public float getOffsetX() {
+        return mOffsetX;
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the x offset of the camera from the target.
+     *
+     * @param pOffsetX the x offset to be set to
      */
-    @Override
-    public float getY() {
-        return mY;
+    public void setOffsetX(float pOffsetX) {
+        mOffsetX = pOffsetX;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the y offset of the camera from the target
      */
-    @Override
-    public void setX(float pX) {
-        mX = pX;
+    public float getOffsetY() {
+        return mOffsetY;
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the y offset of the camera from the target.
+     *
+     * @param pOffsetY the y offset to be set to
      */
-    @Override
-    public void setY(float pY) {
-        mY = pY;
+    public void setOffsetY(float pOffsetY) {
+        mOffsetY = pOffsetY;
     }
 
 }

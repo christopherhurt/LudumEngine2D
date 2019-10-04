@@ -5,13 +5,10 @@ package main;
  * to the camera's position.
  *
  * @author Chris Hurt
- * @version 10.01.19
+ * @version 10.03.19
  */
-public final class FreeCamera
-        implements ICamera {
+public final class FreeCamera extends ACamera {
 
-    private float mX;
-    private float mY;
     private float mVelX;
     private float mVelY;
 
@@ -31,18 +28,18 @@ public final class FreeCamera
      * @param pVelY the initial y velocity
      */
     public FreeCamera(float pX, float pY, float pVelX, float pVelY) {
-        mX = pX;
-        mY = pY;
+        super(pX, pY);
         mVelX = pVelX;
         mVelY = pVelY;
     }
 
     /**
-     * Updates the position of the camera.
+     * {@inheritDoc}
      */
+    @Override
     void update() {
-        mX += mVelX * Time.getDelta();
-        mY += mVelY * Time.getDelta();
+        setX(getX() + mVelX * Time.getDelta());
+        setY(getY() + mVelY * Time.getDelta());
     }
 
     /**
@@ -75,38 +72,6 @@ public final class FreeCamera
      */
     public void setVelY(float pVelY) {
         mVelY = pVelY;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public float getX() {
-        return mX;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public float getY() {
-        return mY;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setX(float pX) {
-        mX = pX;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setY(float pY) {
-        mY = pY;
     }
 
 }

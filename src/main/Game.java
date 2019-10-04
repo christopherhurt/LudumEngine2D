@@ -1,280 +1,142 @@
 package main;
 
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.image.BufferStrategy;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Optional;
 
-public class Game {
-    
-    private static boolean initialized = false;
-    private static Canvas canvas = null;
-    private static float oneOverFps = 0;
-    private static Color clearColor = null;
-    private static boolean gamePaused = false;
-    private static String resourcesFolder = "res";
-    private static List<Scene> scenes = new CopyOnWriteArrayList<>();
-    private static Scene currentScene = null;
-    
-    private Game(){}
-    
-    public static void start(int windowWidth, int windowHeight, String windowTitle, String windowIconFile, int fpsCap, Color clearColor){
-        if(initialized){
-            throw new IllegalStateException("Game has already been initialized");
-        }
-        initialized = true;
-        
-        if(currentScene == null) {
-            throw new IllegalStateException("You must create a scene before starting the game");
-        }
-        
-        canvas = new Canvas();
-        Input inputListener = new Input();
-        canvas.addKeyListener(inputListener);
-        canvas.addMouseListener(inputListener);
-        Window.init(windowWidth, windowHeight, windowTitle, windowIconFile, canvas);
-        
-        oneOverFps = 1.0f / fpsCap;
-        Game.clearColor = clearColor;
-        
-        begin();
-    }
-    
-    public static List<GameObject> getObjectList(String sceneID) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                return scene.getObjectList();
-            }
-        }
-        
-        return null;
-    }
-    
-    public static boolean createScene(String sceneID) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                return false;
-            }
-        }
-        
-        Scene newScene = new Scene(sceneID);
-        boolean success = scenes.add(newScene);
-        
-        if(currentScene == null && success) {
-            currentScene = newScene;
-        }
-        
-        return success;
-    }
-    
-    public static boolean deleteScene(String sceneID) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                if(currentScene == scene) {
-                    return false;
+/**
+ * Main class for the game engine. The game loop begins its execution here.
+ *
+ * @author Chris Hurt
+ * @version 10.03.19
+ */
+public final class Game {
+
+    private static Scene sCurrentScene;
+    private static Integer sFpsCap;
+
+    /**
+     * Launches and starts the game. This method should be called at the end of the main method, as any code outside of
+     * this method will not be executed after this is called.
+     *
+     * @param pInitialScene the initial game scene
+     * @param pWidth the initial width of the window in pixels
+     * @param pHeight the initial height of the window in pixels
+     * @param pTitle the title of the window
+     * @param pImagePath the relative file path of the window's image icon, can be null
+     * @param pFpsCap the maximum frame rate, can be null to indicate no cap
+     */
+    public static void start(Scene pInitialScene, int pWidth, int pHeight, String pTitle, String pImagePath,
+                             Integer pFpsCap) {
+        Window.init(pWidth, pHeight, pTitle, pImagePath);
+        sFpsCap = pFpsCap;
+        setCurrentScene(pInitialScene);
+
+        new Thread(() -> {
+            double lastCapCheck = Time.currentTimePrecise();
+            double timeSinceLastCapCheck = 0d;
+
+            double lastSecondCheck = Time.currentTimePrecise();
+            double secondCounter = 0d;
+            int frameCount = 0;
+
+            while (true) {
+                double currentTime = Time.currentTimePrecise();
+
+                // Synchronize with fps cap
+                if (sFpsCap != null) {
+                    timeSinceLastCapCheck += (currentTime - lastCapCheck);
+                    lastCapCheck = currentTime;
+
+                    if (timeSinceLastCapCheck < 1d / sFpsCap) {
+                        continue;
+                    } else {
+                        timeSinceLastCapCheck = 0d;
+                    }
                 }
-                
-                return scenes.remove(scene);
-            }
-        }
-        
-        return false;
-    }
-    
-    public static boolean addObjectToScene(String sceneID, GameObject obj) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                return scene.addObject(obj);
-            }
-        }
-        
-        return false;
-    }
-    
-    public static boolean removeObjectFromScene(String sceneID, GameObject obj) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                return scene.removeObject(obj);
-            }
-        }
-        
-        return false;
-    }
-    
-    public static boolean attachMenuToScene(String sceneID, Menu menu) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                scene.attachMenu(menu);
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    public static boolean detachMenuFromScene(String sceneID) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                scene.detachMenu();
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    public static void clearScene(String sceneID) {
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                scene.clearObjects();
-            }
-        }
-    }
-    
-    public static List<GameObject> getGameObjects(String objID) {
-        return currentScene.getObjects(objID);
-    }
-    
-    public static Menu getMenu() {
-        return currentScene.getMenu();
-    }
-    
-    public static void readdObjects(String objID) {
-        currentScene.readdObjects(objID);
-    }
-    
-    public static int getObjectsCount() {
-        return currentScene.getObjectCount();
-    }
-    
-    public static String getCurrentScene() {
-        if(currentScene == null) {
-            return null;
-        } else {
-            return currentScene.getID();
-        }
-    }
-    
-    public static boolean setCurrentScene(String sceneID) {
-        if(sceneID == null) {
-            return false;
-        }
-        
-        for(Scene scene : scenes) {
-            if(scene.getID().equals(sceneID)) {
-                currentScene = scene;
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    protected static void updateFonts() {
-        for(Scene scene : scenes) {
-            scene.updateMenuFonts();
-        }
-    }
-    
-    public static void setPaused(boolean paused){
-        gamePaused = paused;
-    }
-    
-    public static boolean isPaused(){
-        return gamePaused;
-    }
-    
-    public static void setWindowSize(int width, int height){
-        Window.setSize(width, height);
-    }
-    
-    public static Dimension getWindowSize(){
-        return new Dimension(Window.getWidth(), Window.getHeight());
-    }
-    
-    public static float getAspectRatio() {
-        return (float)Window.getWidth() / Window.getHeight();
-    }
-    
-    public static Point getMouseLocation(){
-        return canvas.getMousePosition();
-    }
-    
-    public static void setCursor(Cursor cursor) {
-        canvas.setCursor(cursor);
-    }
-    
-    private static void begin(){
-        canvas.requestFocus();
-        
-        new Thread("Game"){
-            @Override
-            public void run(){
-                long lastTime;
-                long currTime = System.nanoTime();
-                double delta = 0;
-                
-                while(true){
-                    lastTime = currTime;
-                    currTime = System.nanoTime();
-                    
-                    delta += (currTime - lastTime) / 1000000000.0;
-                    
-                    if(delta >= oneOverFps){
-                        update();
-                        render();
-                        delta -= oneOverFps;
+
+                update();
+                render();
+
+                // Update fps counter
+                if (Debug.isEnabled()) {
+                    frameCount++;
+                    secondCounter += (currentTime - lastSecondCheck);
+                    lastSecondCheck = currentTime;
+
+                    if (secondCounter >= 1d) {
+                        System.out.println("FPS: " + frameCount);
+                        frameCount = 0;
+                        secondCounter = 0d;
                     }
                 }
             }
-        }.start();
+        }).start();
     }
-    
-    private static void update(){
-        Input.update();
-        if(!gamePaused){
-            FreeCamera.update();
-        }
-        currentScene.update();
+
+    /**
+     * Updates the current scene.
+     */
+    private static void update() {
+        Time.update();
+        sCurrentScene.update();
     }
-    
-    private static void render(){
-        BufferStrategy bs = canvas.getBufferStrategy();
-        if(bs == null){
-            canvas.createBufferStrategy(3);
-            return;
-        }
-        
-        Graphics2D g = (Graphics2D)bs.getDrawGraphics();
-        
-        g.setColor(clearColor);
-        g.fillRect(0, 0, Window.getWidth(), Window.getHeight());
-        
-        currentScene.render(g);
-        
-        g.dispose();
-        bs.show();
+
+    /**
+     * Does a render pass of the current scene.
+     */
+    private static void render() {
+        BufferStrategy bufferStrategy = Window.getCanvas().getBufferStrategy();
+        Graphics2D graphics = (Graphics2D)bufferStrategy.getDrawGraphics();
+
+        sCurrentScene.render(graphics);
+
+        graphics.dispose();
+        bufferStrategy.show();
     }
-    
-    protected static float getOneOverFps(){
-        return oneOverFps;
+
+    /**
+     * @return the current game scene
+     */
+    public static Scene getCurrentScene() {
+        return sCurrentScene;
     }
-    
-    protected static boolean isInitialized(){
-        return initialized;
+
+    /**
+     * Sets the current game scene.
+     *
+     * @param pScene the current scene to be set to
+     */
+    public static void setCurrentScene(Scene pScene) {
+        sCurrentScene = pScene;
     }
-    
-    protected static String getResourcesFolder(){
-        return resourcesFolder;
+
+    /**
+     * @return the fps cap as an {@link Optional}, which is empty if no cap exists
+     */
+    public static Optional<Integer> getFpsCap() {
+        return Optional.ofNullable(sFpsCap);
     }
-    
-    public static void setResourcesFolder(String resFolder){
-        resourcesFolder = resFolder;
+
+    /**
+     * Sets the maximum frame rate.
+     *
+     * @param pFpsCap the fps cap to be set to
+     */
+    public static void setFpsCap(int pFpsCap) {
+        sFpsCap = pFpsCap;
     }
-    
+
+    /**
+     * Closes and ends the game.
+     */
+    public static synchronized void close() {
+        // This should be called last, as it terminates the game
+        Window.destroy();
+    }
+
+    private Game() {
+        // Static class, do not initialize
+    }
+
 }

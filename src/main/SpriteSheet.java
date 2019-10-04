@@ -5,64 +5,93 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+/**
+ * A spritesheet implementation that can hold multiple textures which can be extracted individually.
+ *
+ * @author Chris Hurt
+ * @version 10.03.19
+ */
 public final class SpriteSheet {
-    
-    private static Color backgroundColor = new Color(255, 0, 255);
-    private static Color lineColor = new Color(64, 64, 64);
-    
-    private BufferedImage spriteSheet;
-    private int numColumns, numRows;
-    
-    public SpriteSheet(String file, int numRows, int numColumns){
-        this.numRows = numRows;
-        this.numColumns = numColumns;
 
-        file = "/" + file;
-        try{
-            spriteSheet = ImageIO.read(getClass().getResource(file));
-        }catch(IOException e){
+    private static Color sBackgroundColor = new Color(255, 0, 255);
+    private static Color sLineColor = new Color(64, 64, 64);
+
+    private int mRows;
+    private int mColumns;
+    private BufferedImage mImage;
+
+    /**
+     * Constructor.
+     *
+     * @param pPath the relative file path of the spritesheet
+     * @param pRows the number of rows in the spritesheet
+     * @param pColumns the number of columns in the spritesheet
+     */
+    public SpriteSheet(String pPath, int pRows, int pColumns) {
+        mRows = pRows;
+        mColumns = pColumns;
+
+        try {
+            mImage = ImageIO.read(getClass().getResource("/" + pPath));
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        if(spriteSheet.getWidth() % numColumns != 0){
-            throw new IllegalArgumentException("Sprite sheet columns must have equal sizes");
-        }
-        if(spriteSheet.getHeight() % numRows != 0){
-            throw new IllegalArgumentException("Sprite sheet rows must have equal sizes");
+
+        if (mImage.getWidth() % mColumns != 0) {
+            throw new IllegalArgumentException("Spritesheet " + pPath + " does not have equally-sized columns");
+        } else if (mImage.getHeight() % mRows != 0) {
+            throw new IllegalArgumentException("Spritesheet " + pPath + " does not have equally-sized rows");
         }
     }
-    
-    public Texture getTexture(int row, int column){
-        int spriteSheetWidth = spriteSheet.getWidth();
-        int spriteSheetHeight = spriteSheet.getHeight();
-        int imgWidth = spriteSheetWidth / numColumns;
-        int imgHeight = spriteSheetHeight / numRows;
-        BufferedImage loadedImg = spriteSheet.getSubimage(column * imgWidth, row * imgHeight, imgWidth, imgHeight);
-        BufferedImage img = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_INT_ARGB);
-        
-        int background = backgroundColor.getRGB();
-        int lines = lineColor.getRGB();
-        for(int x = 0; x < imgWidth; x++){
-            for(int y = 0; y < imgHeight; y++){
-                int rgb = loadedImg.getRGB(x, y);
-                
-                if(rgb == background || rgb == lines){
-                    img.setRGB(x, y, 0x00ffffff);
-                }else{
-                    img.setRGB(x, y, rgb);
+
+    /**
+     * Creates a texture from the specified region on the spritesheet.
+     *
+     * @param pRow the row index of the texture image on the spritesheet, starting at 0
+     * @param pColumn the column index of the texture image on the spritesheet, starting at 0
+     * @return the texture constructed from the specified region on the spritesheet
+     */
+    public Texture getTexture(int pRow, int pColumn) {
+        // Get specified region of the spritesheet
+        int width = mImage.getWidth() / mColumns;
+        int height = mImage.getHeight() / mRows;
+        BufferedImage rawImage = mImage.getSubimage(pColumn * width, pRow * height, width, height);
+
+        // Extract raw image data to ARGB format, ignoring spritesheet background and line colors
+        BufferedImage texImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        int backgroundRGB = sBackgroundColor.getRGB();
+        int lineRGB = sLineColor.getRGB();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int pixelRGB = rawImage.getRGB(x, y);
+
+                if (pixelRGB == backgroundRGB || pixelRGB == lineRGB) {
+                    texImage.setRGB(x, y, 0x0);
+                } else {
+                    texImage.setRGB(x, y, pixelRGB);
                 }
             }
         }
-        
-        return new Texture(img);
+
+        return new Texture(texImage);
     }
-    
-    public static void setBackgroundColor(Color color){
-        backgroundColor = color;
+
+    /**
+     * Sets the background color of all spritesheets, which is to be ignored when extracting textures.
+     *
+     * @param pColor the background color
+     */
+    public static void setBackgroundColor(Color pColor) {
+        sBackgroundColor = pColor;
     }
-    
-    public static void setLineColor(Color color){
-        lineColor = color;
+
+    /**
+     * Sets the grid line color of all spritesheets, which is to be ignored when extracting textures.
+     *
+     * @param pColor the grid line color
+     */
+    public static void setLineColor(Color pColor) {
+        sLineColor = pColor;
     }
-    
+
 }

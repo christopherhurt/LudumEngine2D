@@ -1,126 +1,150 @@
 package main;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
+/**
+ * Represents a scene in the game.
+ *
+ * @author Chris Hurt
+ * @version 10.03.19
+ */
 public final class Scene {
-    
-    private String id;
-    private List<GameObject> objects;
-    private Menu menu;
-    
-    protected Scene(String id) {
-        this.id = id;
-        objects = new CopyOnWriteArrayList<>();
-        menu = null;
+
+    private List<GameObject> mGameObjects = new LinkedList<>();
+    private ACamera mCamera;
+    private Color mClearColor;
+
+    /**
+     * Constructor.
+     *
+     * @param pCamera the camera to use for this scene
+     */
+    public Scene(ACamera pCamera, Color pClearColor) {
+        mCamera = pCamera;
+        mClearColor = pClearColor;
     }
-    
-    protected void update() {
-        if(menu != null) {
-            menu.checkButtons();
-        }
-        
-        for(GameObject object : objects) {
-          if(!Game.isPaused() || object.getUpdateWhilePaused()) {
-              if(object instanceof AnimatedGameObject) {
-                  Animation animation = ((AnimatedGameObject)object).getAnimation();
-                  animation.update();
-              }
-              object.updatePhysicsComponents();
-              object.update();
-          }
-        }
+
+    /**
+     * Updates all of the game objects and menu components in this scene.
+     */
+    void update() {
+        // Sort the game objects by z-index
+        mGameObjects.sort(Comparator.comparingInt(GameObject::getZIndex));
+
+        // Update kinematics components
+        mGameObjects.forEach(obj ->
+            obj.getKinematics().ifPresent(kinematics -> {
+                if (obj.getTransform().isPresent()) {
+                    kinematics.update(obj.getTransform().get());
+                } else {
+                    Debug.error("GameObject with id "
+                            + obj.getId() + " has kinematics component without a transform component");
+                }
+            })
+        );
+
+        // TODO: other updates here
+
+        mCamera.update();
     }
-    
-    protected void readdObjects(String objID) {
-      List<GameObject> removedObjects = new ArrayList<>();
-      
-      for(int i = 0; i < objects.size(); i++){
-          GameObject currentObject = objects.get(i);
-          
-          if(currentObject.getID().equals(objID)){
-              removedObjects.add(objects.remove(i));
-              i--;
-          }
-      }
-      
-      for(GameObject object : removedObjects){
-          objects.add(object);
-      }
+
+    /**
+     * Renders all of the game objects and menu components in this scene.
+     *
+     * @param pGraphics the graphics context used for rendering
+     */
+    void render(Graphics2D pGraphics) {
+        // Clear the screen
+        pGraphics.setBackground(mClearColor);
+        Dimension windowDimension = Window.getDimension();
+        pGraphics.clearRect(0, 0, (int)windowDimension.getWidth(), (int)windowDimension.getHeight());
+
+        // Render appearance components
+        pGraphics.translate(Window.normalizedToScreen(-mCamera.getX()), Window.normalizedToScreen(-mCamera.getY()));
+        mGameObjects.forEach(obj ->
+            obj.getAppearance().ifPresent(appearance -> {
+                if (obj.getTransform().isPresent()) {
+                    appearance.updateAndRender(pGraphics, obj.getTransform().get());
+                } else {
+                    Debug.error("GameObject with id "
+                            + obj.getId() + " has appearance component without a transform component");
+                }
+            })
+        );
     }
-    
-    public List<GameObject> getObjectList() {
-        return objects;
+
+    /**
+     * Adds a game object to the scene.
+     *
+     * @param pGameObject the game object to add
+     * @return whether the game object was successfully added
+     */
+    public boolean add(GameObject pGameObject) {
+        return mGameObjects.add(pGameObject);
     }
-    
-    protected int getObjectCount() {
-        return objects.size();
+
+    /**
+     * Removes a game object from the scene.
+     *
+     * @param pGameObject the game object to remove
+     * @return whether the game object was successfully removed
+     */
+    public boolean remove(GameObject pGameObject) {
+        return mGameObjects.remove(pGameObject);
     }
-    
-    protected void updateMenuFonts() {
-        if(menu != null) {
-            menu.updateFonts();
-        }
+
+    /**
+     * Creates and returns a list of game objects in the scene with the specified tag.
+     *
+     * @param pTag the tag of game objects to retrieve
+     * @return a list of game objects with the specified tag
+     */
+    public List<GameObject> getObjectsWithTag(String pTag) {
+        return mGameObjects.stream().filter(obj ->
+                obj.getTag().isPresent() && obj.getTag().get().equals(pTag)).collect(Collectors.toList());
     }
-    
-    protected void render(Graphics2D g) {
-        for(GameObject object : objects){
-          if(object.getCameraAffected()){
-              int xTrans = (int)(-FreeCamera.getX() * Window.getWidth());
-              int yTrans = (int)(-FreeCamera.getY() * Window.getHeight());
-              g.translate(xTrans, yTrans);
-              object.render(g);
-              g.translate(-xTrans, -yTrans);
-          }else{
-              object.render(g);
-          }
-      }
-        
-        if(menu != null) {
-            menu.render(g);
-        }
+
+    /**
+     * @return the number of game objects in the scene
+     */
+    public int getNumObjects() {
+        return mGameObjects.size();
     }
-    
-    protected void attachMenu(Menu menu) {
-        this.menu = menu;
+
+    /**
+     * Clears all game objects from the scene.
+     */
+    public void clear() {
+        mGameObjects.clear();
     }
-    
-    protected void detachMenu() {
-        menu = null;
+
+    /**
+     * @return the camera used by this scene
+     */
+    public ACamera getCamera() {
+        return mCamera;
     }
-    
-    protected boolean addObject(GameObject obj) {
-        return objects.add(obj);
+
+    /**
+     * @return the color to clear the screen to when rendering this scene
+     */
+    public Color getClearColor() {
+        return mClearColor;
     }
-    
-    protected boolean removeObject(GameObject obj) {
-        return objects.remove(obj);
+
+    /**
+     * Sets the color to clear the screen to when rendering this scene
+     *
+     * @param pColor the color to be set to
+     */
+    public void setClearColor(Color pColor) {
+        mClearColor = pColor;
     }
-    
-    protected void clearObjects() {
-        objects.clear();
-    }
-    
-    protected List<GameObject> getObjects(String id) {
-        List<GameObject> matches = new CopyOnWriteArrayList<>();
-        
-        for(GameObject obj : objects) {
-            if(obj.getID().equals(id)) {
-                matches.add(obj);
-            }
-        }
-        
-        return matches;
-    }
-    
-    protected Menu getMenu() {
-        return menu;
-    }
-    
-    protected String getID() {
-        return id;
-    }
-    
+
 }

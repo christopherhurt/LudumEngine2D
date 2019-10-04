@@ -16,7 +16,7 @@ import java.util.Scanner;
  * @author Chris Hurt
  * @version 10.01.19
  */
-public class SaveFile {
+public final class SaveFile {
 
     /** The character used to separate keys from values */
     private static final char SEPARATOR = ':';
