@@ -33,6 +33,9 @@ public final class Game {
         setCurrentScene(pInitialScene);
 
         new Thread(() -> {
+            // A copy of the objects list is made in case this event modifies the game objects in the scene
+            Event.fire(EventType.GAME_START, sCurrentScene.getCopyOfObjects());
+
             double lastCapCheck = Time.currentTime();
             double timeSinceLastCapCheck = 0d;
 
@@ -108,7 +111,15 @@ public final class Game {
      * @param pScene the current scene to be set to
      */
     public static void setCurrentScene(Scene pScene) {
+        // Unload previous scene
+        if (sCurrentScene != null) {
+            Event.fire(EventType.SCENE_UNLOAD, sCurrentScene.getCopyOfObjects());
+        }
+
         sCurrentScene = pScene;
+
+        // Load new scene
+        Event.fire(EventType.SCENE_LOAD, sCurrentScene.getCopyOfObjects());
     }
 
     /**
@@ -131,6 +142,9 @@ public final class Game {
      * Closes and ends the game.
      */
     public static synchronized void close() {
+        // A copy of the objects list is made in case this event modifies the game objects in the scene
+        Event.fire(EventType.GAME_CLOSE, sCurrentScene.getCopyOfObjects());
+
         // This should be called last, as it terminates the game
         Window.destroy();
     }

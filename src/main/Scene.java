@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a scene in the game.
+ * Represents a scene in the game. All game objects in the scene are updated and rendered using pre-ordered traversals
+ * of the parentage tree.
  *
  * @author Chris Hurt
  * @version 10.03.19
@@ -34,11 +35,40 @@ public final class Scene {
      * Updates all of the game objects and menu components in this scene.
      */
     void update() {
-        // Sort the game objects by z-index
-        mGameObjects.sort(Comparator.comparingInt(GameObject::getZIndex));
+        // Sort the game objects by z-index and parentage
+        sortGameObjectList(mGameObjects);
 
         // Update kinematics components
-        mGameObjects.forEach(obj ->
+        updateKinematics(mGameObjects);
+
+        // Update game objects
+        // A copy of the game objects list is made in case one of the events modifies the game objects in the scene
+        List<GameObject> copy = getCopyOfObjects();
+        Event.fire(EventType.UPDATE, copy);
+        Event.fire(EventType.LATE_UPDATE, copy);
+
+        mCamera.update();
+    }
+
+    /**
+     * Recursive helper method that sorts all game objects in the given list by z-index and parentage.
+     *
+     * @param pGameObjects the list of game objects to sort
+     */
+    private static void sortGameObjectList(List<GameObject> pGameObjects) {
+        pGameObjects.sort(Comparator.comparingInt(GameObject::getZIndex));
+        for (GameObject gameObject : pGameObjects) {
+            sortGameObjectList(gameObject.getChildren());
+        }
+    }
+
+    /**
+     * Updates the kinematics components of all game objects in the given list and their children.
+     *
+     * @param pGameObjects the list of game objects to update
+     */
+    private static void updateKinematics(List<GameObject> pGameObjects) {
+        pGameObjects.forEach(obj -> {
             obj.getKinematics().ifPresent(kinematics -> {
                 if (obj.getTransform().isPresent()) {
                     kinematics.update(obj.getTransform().get());
@@ -46,12 +76,9 @@ public final class Scene {
                     Debug.error("GameObject with id "
                             + obj.getId() + " has kinematics component without a transform component");
                 }
-            })
-        );
-
-        // TODO: other updates here
-
-        mCamera.update();
+            });
+            updateKinematics(obj.getChildren());
+        });
     }
 
     /**
@@ -67,7 +94,19 @@ public final class Scene {
 
         // Render appearance components
         pGraphics.translate(Window.normalizedToScreen(-mCamera.getX()), Window.normalizedToScreen(-mCamera.getY()));
-        mGameObjects.forEach(obj ->
+        renderGameObjects(mGameObjects, pGraphics);
+    }
+
+    /**
+     * Recursively renders all children in the scene, including descendants.
+     *
+     * @param pGameObjects the game objects to render
+     * @param pGraphics the graphics context to use for rendering
+     */
+    private static void renderGameObjects(List<GameObject> pGameObjects, Graphics2D pGraphics) {
+        // TODO: RESOLVE FROM PARENT TRANSFORM WHEN RENDERING
+
+        pGameObjects.forEach(obj -> {
             obj.getAppearance().ifPresent(appearance -> {
                 if (obj.getTransform().isPresent()) {
                     appearance.updateAndRender(pGraphics, obj.getTransform().get());
@@ -75,8 +114,16 @@ public final class Scene {
                     Debug.error("GameObject with id "
                             + obj.getId() + " has appearance component without a transform component");
                 }
-            })
-        );
+            });
+            renderGameObjects(obj.getChildren(), pGraphics);
+        });
+    }
+
+    /**
+     * @return a copy of the list of game objects in this scene
+     */
+    List<GameObject> getCopyOfObjects() {
+        return new LinkedList<>(mGameObjects);
     }
 
     /**
@@ -86,7 +133,21 @@ public final class Scene {
      * @return whether the game object was successfully added
      */
     public boolean add(GameObject pGameObject) {
-        return mGameObjects.add(pGameObject);
+        if (pGameObject.getParent().isPresent()) {
+            Debug.error("GameObject with id "
+                    + pGameObject.getId() + " has non-null parent and cannot be directly added to a scene");
+            return false;
+        }
+
+        if (mGameObjects.contains(pGameObject)) {
+            Debug.error("GameObject with id "
+                    + pGameObject.getId() + " cannot be added to a scene multiple times");
+            return false;
+        }
+
+        mGameObjects.add(pGameObject);
+        Event.fire(EventType.ADD_TO_SCENE, List.of(pGameObject));
+        return true;
     }
 
     /**
@@ -96,7 +157,11 @@ public final class Scene {
      * @return whether the game object was successfully removed
      */
     public boolean remove(GameObject pGameObject) {
-        return mGameObjects.remove(pGameObject);
+        boolean removed = mGameObjects.remove(pGameObject);
+        if (removed) {
+            Event.fire(EventType.REMOVE_FROM_SCENE, List.of(pGameObject));
+        }
+        return removed;
     }
 
     /**

@@ -1,5 +1,7 @@
 package main;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,9 +16,14 @@ public final class GameObject {
     private int mId;
     private int mZIndex;
     private String mTag;
+    private GameObject mParent;
     private Transform mTransform;
     private AAppearance mAppearance;
     private Kinematics mKinematics;
+
+    private List<GameObject> mChildren = new LinkedList<>();
+
+    // TODO: add object for game event handlers
 
     /**
      * Package-private constructor.
@@ -24,17 +31,23 @@ public final class GameObject {
      * @param pId the game object's unique id
      * @param pZIndex the z-index used to determine update and render order
      * @param pTag the tag identifier, not necessarily unique
+     * @param pParent the optional parent of this game object
      * @param pTransform the transform containing the game object's position, rotation, and scale
      * @param pAppearance the appearance of the game object, how it's rendered
      * @param pKinematics the kinematics of the game object describing its motion
      */
-    GameObject(int pId, int pZIndex, String pTag, Transform pTransform, AAppearance pAppearance, Kinematics pKinematics) {
+    GameObject(int pId, int pZIndex, String pTag, GameObject pParent, Transform pTransform, AAppearance pAppearance, Kinematics pKinematics) {
         mId = pId;
         mZIndex = pZIndex;
         mTag = pTag;
+        mParent = pParent;
         mTransform = pTransform;
         mAppearance = pAppearance;
         mKinematics = pKinematics;
+
+        if (mParent != null) {
+            mParent.addChild(this);
+        }
     }
 
     /**
@@ -56,6 +69,13 @@ public final class GameObject {
      */
     public Optional<String> getTag() {
         return Optional.ofNullable(mTag);
+    }
+
+    /**
+     * @return the parent
+     */
+    public Optional<GameObject> getParent() {
+        return Optional.ofNullable(mParent);
     }
 
     /**
@@ -98,6 +118,28 @@ public final class GameObject {
     }
 
     /**
+     * Sets the parent.
+     *
+     * @param pParent the parent to be set to, can be null
+     */
+    public void setParent(GameObject pParent) {
+        // Update previous parent
+        if (mParent != null) {
+            if (!mParent.removeChild(this)) {
+                Debug.error("GameObject with id " + mId
+                        + " improperly bound to parent with id " + mParent.getId());
+            }
+        }
+
+        mParent = pParent;
+
+        // Update new parent
+        if (mParent != null) {
+            mParent.addChild(this);
+        }
+    }
+
+    /**
      * Sets the transform component.
      *
      * @param pTransform the transform to be set to
@@ -122,6 +164,54 @@ public final class GameObject {
      */
     public void setKinematics(Kinematics pKinematics) {
         mKinematics = pKinematics;
+    }
+
+    /**
+     * Adds a child of this game object.
+     *
+     * @param pChild the child
+     */
+    private void addChild(GameObject pChild) {
+        mChildren.add(pChild);
+    }
+
+    /**
+     * Removes a child of this game object.
+     *
+     * @param pChild the child
+     * @return whether the child was successfully removed
+     */
+    private boolean removeChild(GameObject pChild) {
+        return mChildren.remove(pChild);
+    }
+
+    /**
+     * @return the list of children of this game object
+     */
+    List<GameObject> getChildren() {
+        return mChildren;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + mId;
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object pObj) {
+        if (!(pObj instanceof GameObject)) {
+            return false;
+        }
+
+        return mId == ((GameObject)pObj).getId();
     }
 
 }

@@ -12,6 +12,7 @@ public final class GameObjectBldr {
 
     private int mZIndex = 0;
     private String mTag = null;
+    private GameObject mParent = null;
     private Transform mTransform = null;
     private AAppearance mAppearance = null;
     private Kinematics mKinematics = null;
@@ -31,6 +32,15 @@ public final class GameObjectBldr {
      */
     public GameObjectBldr withTag(String pTag) {
         mTag = pTag;
+        return this;
+    }
+
+    /**
+     * @param pParent the parent of this game object
+     * @return this builder
+     */
+    public GameObjectBldr withParent(GameObject pParent) {
+        mParent = pParent;
         return this;
     }
 
@@ -73,7 +83,7 @@ public final class GameObjectBldr {
             mTransform = new Transform();
         }
 
-        return new GameObject(id, mZIndex, mTag, mTransform, mAppearance, mKinematics);
+        return new GameObject(id, mZIndex, mTag, mParent, mTransform, mAppearance, mKinematics);
     }
 
 }
