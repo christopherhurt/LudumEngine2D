@@ -19,6 +19,7 @@ public final class Window {
     private static final Canvas CANVAS = new Canvas();
 
     private static boolean sInitialized = false;
+    private static volatile boolean sClosing = false;
     private static JFrame sFrame;
     private static int sHeight;
 
@@ -41,7 +42,8 @@ public final class Window {
         sFrame.setResizable(false);
         sFrame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent pEvt) {
+            public void windowClosing(WindowEvent pEvt) {
+                sClosing = true;
                 Game.close();
             }
         });
@@ -116,7 +118,9 @@ public final class Window {
      */
     static void destroy() {
         checkInitialization();
-        sFrame.dispose();
+        if (!sClosing) {
+            sFrame.dispose();
+        }
     }
 
     /**

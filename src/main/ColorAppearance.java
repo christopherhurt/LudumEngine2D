@@ -35,8 +35,11 @@ public final class ColorAppearance extends AAppearance {
     @Override
     void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
         pGraphics.setColor(mColor);
-        pGraphics.fillRect(Window.normalizedToScreen(pTransform.getX()), Window.normalizedToScreen(pTransform.getY()),
-                Window.normalizedToScreen(pTransform.getWidth()), Window.normalizedToScreen(pTransform.getHeight()));
+        int width = Window.normalizedToScreen(pTransform.getScaleX());
+        int height = Window.normalizedToScreen(pTransform.getScaleY());
+        pGraphics.fillRect(Window.normalizedToScreen(pTransform.getX()) - width / 2,
+                Window.normalizedToScreen(pTransform.getY()) - height / 2,
+                width, height);
     }
 
 }

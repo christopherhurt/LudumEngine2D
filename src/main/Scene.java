@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,14 +39,17 @@ public final class Scene {
         // Sort the game objects by z-index and parentage
         sortGameObjectList(mGameObjects);
 
+        // Resolve overall transforms based on parentage
+        resolveTransforms(mGameObjects);
+
         // Update kinematics components
         updateKinematics(mGameObjects);
 
         // Update game objects
         // A copy of the game objects list is made in case one of the events modifies the game objects in the scene
         List<GameObject> copy = getCopyOfObjects();
-        Event.fire(EventType.UPDATE, copy);
-        Event.fire(EventType.LATE_UPDATE, copy);
+        new GameEvent(EventType.UPDATE, this).fire(copy);
+        new GameEvent(EventType.LATE_UPDATE, this).fire(copy);
 
         mCamera.update();
     }
@@ -60,6 +64,18 @@ public final class Scene {
         for (GameObject gameObject : pGameObjects) {
             sortGameObjectList(gameObject.getChildren());
         }
+    }
+
+    /**
+     * Resolves overall screen space transforms based on parentage.
+     *
+     * @param pGameObjects the list of game objects to resolve
+     */
+    private static void resolveTransforms(List<GameObject> pGameObjects) {
+        pGameObjects.forEach(obj -> {
+            obj.resolveTransformFromParent();
+            resolveTransforms(obj.getChildren());
+        });
     }
 
     /**
@@ -93,7 +109,8 @@ public final class Scene {
         pGraphics.clearRect(0, 0, (int)windowDimension.getWidth(), (int)windowDimension.getHeight());
 
         // Render appearance components
-        pGraphics.translate(Window.normalizedToScreen(-mCamera.getX()), Window.normalizedToScreen(-mCamera.getY()));
+        pGraphics.translate(Window.normalizedToScreen(-(mCamera.getX() - 0.5 * Window.getAspectRatio())),
+                Window.normalizedToScreen(-(mCamera.getY() - 0.5)));
         renderGameObjects(mGameObjects, pGraphics);
     }
 
@@ -104,15 +121,14 @@ public final class Scene {
      * @param pGraphics the graphics context to use for rendering
      */
     private static void renderGameObjects(List<GameObject> pGameObjects, Graphics2D pGraphics) {
-        // TODO: RESOLVE FROM PARENT TRANSFORM WHEN RENDERING
-
         pGameObjects.forEach(obj -> {
             obj.getAppearance().ifPresent(appearance -> {
-                if (obj.getTransform().isPresent()) {
-                    appearance.updateAndRender(pGraphics, obj.getTransform().get());
+                Optional<Transform> resolvedTransform = obj.getResolvedTransform();
+                if (resolvedTransform.isPresent()) {
+                    appearance.updateAndRender(pGraphics, resolvedTransform.get());
                 } else {
                     Debug.error("GameObject with id "
-                            + obj.getId() + " has appearance component without a transform component");
+                            + obj.getId() + " has appearance component without a resolved transform");
                 }
             });
             renderGameObjects(obj.getChildren(), pGraphics);
@@ -146,7 +162,7 @@ public final class Scene {
         }
 
         mGameObjects.add(pGameObject);
-        Event.fire(EventType.ADD_TO_SCENE, List.of(pGameObject));
+        new GameEvent(EventType.ADD_TO_SCENE, this).fire(List.of(pGameObject));
         return true;
     }
 
@@ -159,7 +175,7 @@ public final class Scene {
     public boolean remove(GameObject pGameObject) {
         boolean removed = mGameObjects.remove(pGameObject);
         if (removed) {
-            Event.fire(EventType.REMOVE_FROM_SCENE, List.of(pGameObject));
+            new GameEvent(EventType.REMOVE_FROM_SCENE, this).fire(List.of(pGameObject));
         }
         return removed;
     }

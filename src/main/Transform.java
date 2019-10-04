@@ -1,7 +1,7 @@
 package main;
 
 /**
- * Represents a transform describing a game object's position and size.
+ * Represents a transform describing a game object's position and scale.
  *
  * @author Chris Hurt
  * @version 10.03.19
@@ -10,8 +10,8 @@ public final class Transform {
 
     private double mX;
     private double mY;
-    private double mWidth;
-    private double mHeight;
+    private double mScaleX;
+    private double mScaleY;
 
     /**
      * Default constructor.
@@ -25,14 +25,14 @@ public final class Transform {
      *
      * @param pX the normalized x position relative to the height of the window
      * @param pY the normalized y position relative to the height of the window
-     * @param pWidth the normalized width relative to the height of the window
-     * @param pHeight the normalized height relative to the height of the window
+     * @param pScaleX the normalized x scale relative to the height of the window
+     * @param pScaleY the normalized y scale relative to the height of the window
      */
-    public Transform(double pX, double pY, double pWidth, double pHeight) {
+    public Transform(double pX, double pY, double pScaleX, double pScaleY) {
         mX = pX;
         mY = pY;
-        mWidth = pWidth;
-        mHeight = pHeight;
+        mScaleX = pScaleX;
+        mScaleY = pScaleY;
     }
 
     /**
@@ -68,35 +68,42 @@ public final class Transform {
     }
 
     /**
-     * @return the width
+     * @return the x scale
      */
-    public double getWidth() {
-        return mWidth;
+    public double getScaleX() {
+        return mScaleX;
     }
 
     /**
-     * Sets the width.
+     * Sets the x scale.
      *
-     * @param pWidth the width to be set to
+     * @param pScaleX the x scale to be set to
      */
-    public void setWidth(double pWidth) {
-        mWidth = pWidth;
+    public void setScaleX(double pScaleX) {
+        mScaleX = pScaleX;
     }
 
     /**
-     * @return the height
+     * @return the y scale
      */
-    public double getHeight() {
-        return mHeight;
+    public double getScaleY() {
+        return mScaleY;
     }
 
     /**
-     * Sets the height.
+     * Sets the y scale.
      *
-     * @param pHeight the height to be set to
+     * @param pScaleY the y scale to be set to
      */
-    public void setHeight(double pHeight) {
-        mHeight = pHeight;
+    public void setScaleY(double pScaleY) {
+        mScaleY = pScaleY;
+    }
+
+    /**
+     * @return a copy of this transform
+     */
+    public Transform copy() {
+        return new Transform(mX, mY, mScaleX, mScaleY);
     }
 
 }

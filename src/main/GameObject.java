@@ -13,17 +13,20 @@ import java.util.Optional;
  */
 public final class GameObject {
 
+    /** The default resolve transform, which won't have any effect on the resolving game object */
+    private static final Transform DEFAULT_RESOLVE_TRANSFORM = new Transform(0d, 0d, 1d, 1d);
+
     private int mId;
     private int mZIndex;
     private String mTag;
     private GameObject mParent;
+    private IHandler mHandler;
     private Transform mTransform;
     private AAppearance mAppearance;
     private Kinematics mKinematics;
 
     private List<GameObject> mChildren = new LinkedList<>();
-
-    // TODO: add object for game event handlers
+    private Transform mResolvedTransform = null;
 
     /**
      * Package-private constructor.
@@ -32,15 +35,18 @@ public final class GameObject {
      * @param pZIndex the z-index used to determine update and render order
      * @param pTag the tag identifier, not necessarily unique
      * @param pParent the optional parent of this game object
+     * @param pHandler the handler for all event types
      * @param pTransform the transform containing the game object's position, rotation, and scale
      * @param pAppearance the appearance of the game object, how it's rendered
      * @param pKinematics the kinematics of the game object describing its motion
      */
-    GameObject(int pId, int pZIndex, String pTag, GameObject pParent, Transform pTransform, AAppearance pAppearance, Kinematics pKinematics) {
+    GameObject(int pId, int pZIndex, String pTag, GameObject pParent, IHandler pHandler, Transform pTransform,
+               AAppearance pAppearance, Kinematics pKinematics) {
         mId = pId;
         mZIndex = pZIndex;
         mTag = pTag;
         mParent = pParent;
+        mHandler = pHandler;
         mTransform = pTransform;
         mAppearance = pAppearance;
         mKinematics = pKinematics;
@@ -76,6 +82,13 @@ public final class GameObject {
      */
     public Optional<GameObject> getParent() {
         return Optional.ofNullable(mParent);
+    }
+
+    /**
+     * @return the event handler
+     */
+    public Optional<IHandler> getHandler() {
+        return Optional.ofNullable(mHandler);
     }
 
     /**
@@ -118,25 +131,12 @@ public final class GameObject {
     }
 
     /**
-     * Sets the parent.
+     * Sets the handler component.
      *
-     * @param pParent the parent to be set to, can be null
+     * @param pHandler the handler to be set to
      */
-    public void setParent(GameObject pParent) {
-        // Update previous parent
-        if (mParent != null) {
-            if (!mParent.removeChild(this)) {
-                Debug.error("GameObject with id " + mId
-                        + " improperly bound to parent with id " + mParent.getId());
-            }
-        }
-
-        mParent = pParent;
-
-        // Update new parent
-        if (mParent != null) {
-            mParent.addChild(this);
-        }
+    public void setHandler(IHandler pHandler) {
+        mHandler = pHandler;
     }
 
     /**
@@ -176,20 +176,42 @@ public final class GameObject {
     }
 
     /**
-     * Removes a child of this game object.
-     *
-     * @param pChild the child
-     * @return whether the child was successfully removed
-     */
-    private boolean removeChild(GameObject pChild) {
-        return mChildren.remove(pChild);
-    }
-
-    /**
      * @return the list of children of this game object
      */
     List<GameObject> getChildren() {
         return mChildren;
+    }
+
+    /**
+     * @return the resolved transform, possibly empty
+     */
+    Optional<Transform> getResolvedTransform() {
+        return Optional.ofNullable(mResolvedTransform);
+    }
+
+    /**
+     * Resolves the overall screen space transform for this game object from the parent object.
+     */
+    void resolveTransformFromParent() {
+        Transform parentResolvedTransform;
+        if (mParent == null) {
+            // No parent, use default resolve transform
+            parentResolvedTransform = DEFAULT_RESOLVE_TRANSFORM;
+        } else {
+            parentResolvedTransform = mParent.mResolvedTransform;
+        }
+
+        if (getTransform().isPresent()) {
+            Transform transform = getTransform().get();
+            mResolvedTransform = new Transform(
+                    transform.getX() * parentResolvedTransform.getScaleX() + parentResolvedTransform.getX(),
+                    transform.getY() * parentResolvedTransform.getScaleY() + parentResolvedTransform.getY(),
+                    transform.getScaleX() * parentResolvedTransform.getScaleX(),
+                    transform.getScaleY() * parentResolvedTransform.getScaleY());
+        } else {
+            // No transform on this game object, pass on the parent's resolved transform
+            mResolvedTransform = parentResolvedTransform.copy();
+        }
     }
 
     /**

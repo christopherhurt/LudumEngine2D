@@ -26,9 +26,10 @@ public final class TextureAppearance extends AAppearance {
      */
     @Override
     void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
-        pGraphics.drawImage(mTexture.getImage(), Window.normalizedToScreen(pTransform.getX()),
-                Window.normalizedToScreen(pTransform.getY()), Window.normalizedToScreen(pTransform.getWidth()),
-                Window.normalizedToScreen(pTransform.getHeight()), null);
+        int width = Window.normalizedToScreen(pTransform.getScaleX());
+        int height = Window.normalizedToScreen(pTransform.getScaleY());
+        pGraphics.drawImage(mTexture.getImage(), Window.normalizedToScreen(pTransform.getX()) - width / 2,
+                Window.normalizedToScreen(pTransform.getY()) - height / 2, width, height, null);
     }
 
 }

@@ -49,9 +49,10 @@ public final class AnimationAppearance extends AAppearance {
         mCurrentIndex = (mCurrentIndex + mTextures.length / mDuration * Time.getDelta()) % mTextures.length;
 
         Texture currentTexture = mTextures[(int)mCurrentIndex];
-        pGraphics.drawImage(currentTexture.getImage(), Window.normalizedToScreen(pTransform.getX()),
-                Window.normalizedToScreen(pTransform.getY()), Window.normalizedToScreen(pTransform.getWidth()),
-                Window.normalizedToScreen(pTransform.getHeight()), null);
+        int width = Window.normalizedToScreen(pTransform.getScaleX());
+        int height = Window.normalizedToScreen(pTransform.getScaleY());
+        pGraphics.drawImage(currentTexture.getImage(), Window.normalizedToScreen(pTransform.getX()) - width / 2,
+                Window.normalizedToScreen(pTransform.getY()) - height / 2, width, height, null);
     }
 
     /**

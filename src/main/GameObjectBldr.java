@@ -13,6 +13,7 @@ public final class GameObjectBldr {
     private int mZIndex = 0;
     private String mTag = null;
     private GameObject mParent = null;
+    private IHandler mHandler = null;
     private Transform mTransform = null;
     private AAppearance mAppearance = null;
     private Kinematics mKinematics = null;
@@ -41,6 +42,15 @@ public final class GameObjectBldr {
      */
     public GameObjectBldr withParent(GameObject pParent) {
         mParent = pParent;
+        return this;
+    }
+
+    /**
+     * @param pHandler the event handler to use
+     * @return this builder
+     */
+    public GameObjectBldr withHandler(IHandler pHandler) {
+        mHandler = pHandler;
         return this;
     }
 
@@ -83,7 +93,7 @@ public final class GameObjectBldr {
             mTransform = new Transform();
         }
 
-        return new GameObject(id, mZIndex, mTag, mParent, mTransform, mAppearance, mKinematics);
+        return new GameObject(id, mZIndex, mTag, mParent, mHandler, mTransform, mAppearance, mKinematics);
     }
 
 }
