@@ -26,11 +26,9 @@ public final class TextureAppearance extends AAppearance {
      */
     @Override
     void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
-        int screenWidth = Window.normalizedToScreen(pTransform.getWidth());
-        int screenHeight = Window.normalizedToScreen(pTransform.getHeight());
-        pGraphics.rotate(Math.toRadians(pTransform.getRotation()), screenWidth / 2d, screenHeight / 2d);
         pGraphics.drawImage(mTexture.getImage(), Window.normalizedToScreen(pTransform.getX()),
-                Window.normalizedToScreen(pTransform.getY()), screenWidth, screenHeight, null);
+                Window.normalizedToScreen(pTransform.getY()), Window.normalizedToScreen(pTransform.getWidth()),
+                Window.normalizedToScreen(pTransform.getHeight()), null);
     }
 
 }

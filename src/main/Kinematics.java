@@ -1,7 +1,7 @@
 package main;
 
 /**
- * Represents a kinematics component that controls a game object's linear and angular velocity and acceleration.
+ * Represents a kinematics component that controls a game object's linear velocity and acceleration.
  *
  * @author Chris Hurt
  * @version 10.03.19
@@ -10,16 +10,14 @@ public final class Kinematics {
 
     private double mVelX;
     private double mVelY;
-    private double mAngVel;
     private double mAccX;
     private double mAccY;
-    private double mAngAcc;
 
     /**
      * Default constructor.
      */
     public Kinematics() {
-        this(0d, 0d, 0d, 0d, 0d, 0d);
+        this(0d, 0d, 0d, 0d);
     }
 
     /**
@@ -27,37 +25,29 @@ public final class Kinematics {
      *
      * @param pVelX the x velocity
      * @param pVelY the y velocity
-     * @param pAngVel the angular velocity
      * @param pAccX the x acceleration
      * @param pAccY the y acceleration
-     * @param pAngAcc the angular acceleration
      */
-    public Kinematics(double pVelX, double pVelY, double pAngVel, double pAccX, double pAccY, double pAngAcc) {
+    public Kinematics(double pVelX, double pVelY, double pAccX, double pAccY) {
         mVelX = pVelX;
         mVelY = pVelY;
-        mAngVel = pAngVel;
         mAccX = pAccX;
         mAccY = pAccY;
-        mAngAcc = pAngAcc;
     }
 
     /**
-     * Updates the velocities of this kinematics component, as well as the positions and rotation of the given
-     * transform.
+     * Updates the velocities of this kinematics component, as well as the position of the given transform.
      *
      * @param pTransform the transform to update with this kinematics component
      */
     void update(Transform pTransform) {
         mVelX += mAccX * Time.getDelta();
         mVelY += mAccY * Time.getDelta();
-        mAngVel += mAngAcc * Time.getDelta();
 
         pTransform.setX(pTransform.getX() + mVelX * Time.getDelta()
                 + mAccX * 0.5 * Time.getDelta() * Time.getDelta());
         pTransform.setY(pTransform.getY() + mVelY * Time.getDelta()
                 + mAccY * 0.5 * Time.getDelta() * Time.getDelta());
-        pTransform.setRotation(pTransform.getRotation() + mAngVel * Time.getDelta()
-                + mAngAcc * 0.5 * Time.getDelta() * Time.getDelta());
     }
 
     /**
@@ -93,22 +83,6 @@ public final class Kinematics {
     }
 
     /**
-     * @return the angular velocity
-     */
-    public double getAngVel() {
-        return mAngVel;
-    }
-
-    /**
-     * Sets the angular velocity.
-     *
-     * @param pAngVel the angular velocity to be set to
-     */
-    public void setAngVel(double pAngVel) {
-        mAngVel = pAngVel;
-    }
-
-    /**
      * @return the x acceleration
      */
     public double getAccX() {
@@ -138,22 +112,6 @@ public final class Kinematics {
      */
     public void setAccY(double pAccY) {
         mAccY = pAccY;
-    }
-
-    /**
-     * @return the angular acceleration
-     */
-    public double getAngAcc() {
-        return mAngAcc;
-    }
-
-    /**
-     * Sets the angular acceleration.
-     *
-     * @param pAngAcc the angular acceleration to be set to
-     */
-    public void setAngAcc(double pAngAcc) {
-        mAngAcc = pAngAcc;
     }
 
 }

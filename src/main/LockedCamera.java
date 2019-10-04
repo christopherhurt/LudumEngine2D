@@ -76,9 +76,8 @@ public final class LockedCamera extends ACamera {
         if (mTarget != null) {
             if (mTarget.getTransform().isPresent()) {
                 Transform transform = mTarget.getTransform().get();
-                // TODO: fix glitchiness here
-//                setX(transform.getX() + transform.getWidth() / 2.0f + mOffsetX - 0.5f * Window.getAspectRatio());
-//                setY(transform.getY() + transform.getHeight() / 2.0f + mOffsetY - 0.5f);
+                setX(transform.getX() + transform.getWidth() / 2d + mOffsetX - 0.5 * Window.getAspectRatio());
+                setY(transform.getY() + transform.getHeight() / 2d + mOffsetY - 0.5);
             } else {
                 Debug.warn("Camera is locked to GameObject with id "
                         + mTarget.getId() + " that does not have a Transform component");

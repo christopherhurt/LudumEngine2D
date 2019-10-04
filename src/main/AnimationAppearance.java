@@ -48,13 +48,10 @@ public final class AnimationAppearance extends AAppearance {
     void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
         mCurrentIndex = (mCurrentIndex + mTextures.length / mDuration * Time.getDelta()) % mTextures.length;
 
-        // TODO: rethink how this is done, fix glitchyness issues
-        int screenWidth = Window.normalizedToScreen(pTransform.getWidth());
-        int screenHeight = Window.normalizedToScreen(pTransform.getHeight());
-        pGraphics.rotate(Math.toRadians(pTransform.getRotation()), screenWidth / 2d, screenHeight / 2d);
         Texture currentTexture = mTextures[(int)mCurrentIndex];
         pGraphics.drawImage(currentTexture.getImage(), Window.normalizedToScreen(pTransform.getX()),
-                Window.normalizedToScreen(pTransform.getY()), screenWidth, screenHeight, null);
+                Window.normalizedToScreen(pTransform.getY()), Window.normalizedToScreen(pTransform.getWidth()),
+                Window.normalizedToScreen(pTransform.getHeight()), null);
     }
 
     /**

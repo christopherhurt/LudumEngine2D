@@ -34,20 +34,9 @@ public final class ColorAppearance extends AAppearance {
      */
     @Override
     void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
-        // TODO: address these issues, fix glitchiness
-//        pGraphics.getTransform(); // TODO: remove
         pGraphics.setColor(mColor);
-        int screenWidth = Window.normalizedToScreen(pTransform.getWidth());
-        int screenHeight = Window.normalizedToScreen(pTransform.getHeight());
-        tester += 0.0005;
-//        pGraphics.setTransform(AffineTransform.getRotateInstance(tester));
-//        pGraphics.setTransform(AffineTransform.getRotateInstance(tester, 0.5 * Window.getDimension().getHeight(), 0.5 * Window.getDimension().getHeight()));
-//        pGraphics.rotate(tester, 0.05 * Window.getDimension().getHeight(), 0.05 * Window.getDimension().getHeight());
-        pGraphics.rotate(Math.toRadians(pTransform.getRotation()), screenWidth / 2d, screenHeight / 2d);
         pGraphics.fillRect(Window.normalizedToScreen(pTransform.getX()), Window.normalizedToScreen(pTransform.getY()),
-                screenWidth, screenHeight);
+                Window.normalizedToScreen(pTransform.getWidth()), Window.normalizedToScreen(pTransform.getHeight()));
     }
-
-    double tester = 0d;
 
 }

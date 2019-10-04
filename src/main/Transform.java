@@ -1,7 +1,7 @@
 package main;
 
 /**
- * Represents a transform describing a game object's position, rotation, and scale.
+ * Represents a transform describing a game object's position and size.
  *
  * @author Chris Hurt
  * @version 10.03.19
@@ -12,13 +12,12 @@ public final class Transform {
     private double mY;
     private double mWidth;
     private double mHeight;
-    private double mRotation;
 
     /**
      * Default constructor.
      */
     public Transform() {
-        this(0d, 0d, 0.1, 0.1, 0d);
+        this(0d, 0d, 0.1, 0.1);
     }
 
     /**
@@ -28,14 +27,12 @@ public final class Transform {
      * @param pY the normalized y position relative to the height of the window
      * @param pWidth the normalized width relative to the height of the window
      * @param pHeight the normalized height relative to the height of the window
-     * @param pRotation the rotation in degrees
      */
-    public Transform(double pX, double pY, double pWidth, double pHeight, double pRotation) {
+    public Transform(double pX, double pY, double pWidth, double pHeight) {
         mX = pX;
         mY = pY;
         mWidth = pWidth;
         mHeight = pHeight;
-        mRotation = pRotation;
     }
 
     /**
@@ -100,22 +97,6 @@ public final class Transform {
      */
     public void setHeight(double pHeight) {
         mHeight = pHeight;
-    }
-
-    /**
-     * @return the rotation
-     */
-    public double getRotation() {
-        return mRotation;
-    }
-
-    /**
-     * Sets the rotation.
-     *
-     * @param pRotation the rotation to be set to
-     */
-    public void setRotation(double pRotation) {
-        mRotation = pRotation;
     }
 
 }
