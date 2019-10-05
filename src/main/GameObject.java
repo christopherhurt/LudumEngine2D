@@ -26,6 +26,7 @@ public final class GameObject {
     private AAppearance mAppearance;
     private Kinematics mKinematics;
     private AGUIComponent mGUIComponent;
+    private BoundingBox mBoundingBox;
 
     private List<GameObject> mChildren = new LinkedList<>();
     private Transform mResolvedTransform = null;
@@ -42,9 +43,10 @@ public final class GameObject {
      * @param pAppearance the appearance of the game object, how it's rendered
      * @param pKinematics the kinematics of the game object describing its motion
      * @param pGUIComponent the GUI component used for this game object
+     * @param pBoundingBox the bounding box component to use for this game object
      */
     GameObject(int pId, int pZIndex, String pTag, GameObject pParent, IHandler pHandler, Transform pTransform,
-               AAppearance pAppearance, Kinematics pKinematics, AGUIComponent pGUIComponent) {
+               AAppearance pAppearance, Kinematics pKinematics, AGUIComponent pGUIComponent, BoundingBox pBoundingBox) {
         mId = pId;
         mZIndex = pZIndex;
         mTag = pTag;
@@ -54,6 +56,7 @@ public final class GameObject {
         mAppearance = pAppearance;
         mKinematics = pKinematics;
         mGUIComponent = pGUIComponent;
+        mBoundingBox = pBoundingBox;
 
         if (mParent != null) {
             mParent.addChild(this);
@@ -124,6 +127,13 @@ public final class GameObject {
     }
 
     /**
+     * @return the bounding box component
+     */
+    public Optional<BoundingBox> getBoundingBox() {
+        return Optional.ofNullable(mBoundingBox);
+    }
+
+    /**
      * Sets the z-index.
      *
      * @param pZIndex the z-index to be set to
@@ -184,6 +194,15 @@ public final class GameObject {
      */
     public void setGUIComponent(AGUIComponent pGUIComponent) {
         mGUIComponent = pGUIComponent;
+    }
+
+    /**
+     * Sets the bounding box component.
+     *
+     * @param pBoundingBox the bounding box component to be set to
+     */
+    public void setBoundingBox(BoundingBox pBoundingBox) {
+        mBoundingBox = pBoundingBox;
     }
 
     /**

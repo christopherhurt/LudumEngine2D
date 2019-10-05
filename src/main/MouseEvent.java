@@ -47,7 +47,7 @@ public final class MouseEvent extends AInputEvent {
      * @param pButtonCode the button code being checked
      * @return the same button code if valid, BUTTON_UNKNOWN otherwise
      */
-    private static int checkValidButtonCode(int pButtonCode) {
+    static int checkValidButtonCode(int pButtonCode) {
         if (!(pButtonCode == BUTTON_LEFT || pButtonCode == BUTTON_MIDDLE || pButtonCode == BUTTON_RIGHT
             || pButtonCode == BUTTON_UNKNOWN)) {
             Debug.error("Invalid button code " + pButtonCode + " used for MouseEvent");

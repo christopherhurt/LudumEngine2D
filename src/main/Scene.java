@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
@@ -44,13 +45,106 @@ public final class Scene {
         mCamera = pCamera;
         mClearColor = pClearColor;
 
-        // Helper game object for passing mouse events to GUI buttons
+        // Helper game object for passing mouse events to GUI buttons and bounding box components
         add(new GameObjectBldr().withHandler((pEvt, pSelf) -> {
             if (pEvt instanceof MouseEvent) {
                 MouseEvent mouseEvent = (MouseEvent)pEvt;
-                mGameObjects.forEach(obj -> obj.getGUIComponent().ifPresent(gui -> gui.update(mouseEvent, obj)));
+
+                // Pass to GUI buttons
+                // A copy of the game objects list is used in case any of the handlers of the GUI events modify the
+                // scene
+                generateGUIEvents(mouseEvent, getCopyOfObjects());
+
+                // Check if bounding box events should be fired
+                // These events can only be fired if the mouse was pressed or released
+                if (pEvt.getType() == EventType.MOUSE_BUTTON_PRESSED
+                        || pEvt.getType() == EventType.MOUSE_BUTTON_RELEASED) {
+                    generateBoundingBoxEvents(mouseEvent, getCopyOfObjects());
+                }
             }
         }).withZIndex(Integer.MIN_VALUE).build());
+    }
+
+    /**
+     * Recursively generates GUI events for the given mouse event for a given list of game objects and their
+     * descendants.
+     *
+     * @param pEvt the mouse event generating the GUI events
+     * @param pGameObjects the list of event targets
+     */
+    private static void generateGUIEvents(MouseEvent pEvt, List<GameObject> pGameObjects) {
+        for (GameObject obj : pGameObjects) {
+            // Pass the event to the GUI component to optionally process and generate the GUI event
+            obj.getGUIComponent().ifPresent(gui -> gui.update(pEvt, obj));
+
+            if (pEvt.isConsumed()) {
+                // If the mouse event was consumed, stop producing GUI events
+                return;
+            } else {
+                generateGUIEvents(pEvt, obj.getChildren());
+            }
+        }
+    }
+
+    /**
+     * Recursively generates bounding box events for the given mouse event for a given list of game objects and their
+     * descendants.
+     *
+     * @param pEvt the mouse event generating the bounding box events
+     * @param pGameObjects the list of event targets
+     */
+    private static void generateBoundingBoxEvents(MouseEvent pEvt, List<GameObject> pGameObjects) {
+        for (GameObject obj : pGameObjects) {
+            obj.getBoundingBox().ifPresent(box ->
+                    obj.getRelativeMouseLocation(pEvt).ifPresent(point -> {
+                        // Note - two implicit calls to BoundingBox
+                        //        convertRelativeTransformPointToRelativeBoundingBoxPoint() are done here for
+                        //        organizational purposes, as this method is operationally inexpensive
+                        if (box.containsRelativePoint(point)) {
+                            Point2D.Double normalizedPoint =
+                                    box.convertRelativeTransformPointToRelativeBoundingBoxPoint(point);
+
+                            EventType boundingBoxEventType;
+                            switch (pEvt.getType()) {
+                                case MOUSE_BUTTON_PRESSED:
+                                    boundingBoxEventType = EventType.BOUNDING_BOX_PRESSED;
+                                    break;
+                                case MOUSE_BUTTON_RELEASED:
+                                    boundingBoxEventType = EventType.BOUNDING_BOX_RELEASED;
+                                    break;
+                                default:
+                                    return;
+                            }
+
+                            fireBoundingBoxEvent(pEvt, boundingBoxEventType, normalizedPoint, obj);
+                        }
+                    }));
+
+            if (pEvt.isConsumed()) {
+                // If the mouse event was consumed, stop producing bounding box events
+                return;
+            } else {
+                generateBoundingBoxEvents(pEvt, obj.getChildren());
+            }
+        }
+    }
+
+    /**
+     * Static helper method that creates and fires a bounding box event with the given parameters.
+     *
+     * @param pSourceEvt the mouse event generating the bounding box event
+     * @param pType the event type enum
+     * @param pRelativePoint the point relative to the bounding box associated with the bounding box event
+     * @param pTarget the target of the bounding box event, the owner of the associated bounding box
+     */
+    private static void fireBoundingBoxEvent(MouseEvent pSourceEvt, EventType pType, Point2D.Double pRelativePoint,
+                                             GameObject pTarget) {
+        BoundingBoxEvent boxEvent = new BoundingBoxEvent(pType, pSourceEvt.getScene(), pRelativePoint,
+                pSourceEvt.getButtonCode());
+        boxEvent.fire(List.of(pTarget));
+        if (boxEvent.isConsumed()) {
+            pSourceEvt.consume();
+        }
     }
 
     /**
@@ -178,6 +272,18 @@ public final class Scene {
                             + obj.getId() + " has GUI component without a resolved transform");
                 }
             });
+
+            // Render bounding box component
+            if (Debug.isEnabled()) {
+                obj.getBoundingBox().ifPresent(box -> {
+                    if (resolvedTransform.isPresent()) {
+                        box.render(pGraphics, resolvedTransform.get());
+                    } else {
+                        Debug.error("GameObject with id "
+                                + obj.getId() + " has bounding box component without a resolved transform");
+                    }
+                });
+            }
 
             // Render children
             renderGameObjects(obj.getChildren(), pGraphics);

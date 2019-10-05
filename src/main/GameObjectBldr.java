@@ -18,6 +18,7 @@ public final class GameObjectBldr {
     private AAppearance mAppearance = null;
     private Kinematics mKinematics = null;
     private AGUIComponent mGUIComponent = null;
+    private BoundingBox mBoundingBox = null;
 
     /**
      * @param pZIndex the z-index to use
@@ -92,19 +93,29 @@ public final class GameObjectBldr {
     }
 
     /**
+     * @param pBoundingBox the bounding box component to use
+     * @return this builder
+     */
+    public GameObjectBldr withBoundingBox(BoundingBox pBoundingBox) {
+        mBoundingBox = pBoundingBox;
+        return this;
+    }
+
+    /**
      * @return the built game object
      */
     public GameObject build() {
         int id = sIdCounter++;
 
-        // Can't have an appearance or kinematics component without a transform
-        if ((mAppearance != null || mKinematics != null || mGUIComponent != null) && mTransform == null) {
+        // Can't have any of these components without a transform
+        if ((mAppearance != null || mKinematics != null || mGUIComponent != null || mBoundingBox != null)
+                && mTransform == null) {
             Debug.warn("Using default transform for GameObject with id " + id);
             mTransform = new Transform();
         }
 
         return new GameObject(id, mZIndex, mTag, mParent, mHandler, mTransform, mAppearance, mKinematics,
-                mGUIComponent);
+                mGUIComponent, mBoundingBox);
     }
 
 }

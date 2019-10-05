@@ -40,7 +40,12 @@ public enum EventType {
 
     // Interpolation events
     // Targets - all game objects in the current scene
-    INTERPOLATION_FINISHED("INTERPOLATION_FINISHED");
+    INTERPOLATION_FINISHED("INTERPOLATION_FINISHED"),
+
+    // Bounding box events
+    // Targets - the game object with the source bounding box attached
+    BOUNDING_BOX_PRESSED("BOUNDING_BOX_PRESSED"),
+    BOUNDING_BOX_RELEASED("BOUNDING_BOX_RELEASED");
 
     private String mStringRepresentation;
 
