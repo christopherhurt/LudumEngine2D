@@ -32,29 +32,6 @@ public abstract class AInputEvent extends AEvent {
     }
 
     /**
-     * @return an optional containing the normalized location of the mouse cursor relative to the given game object
-     *         relative to the dimension of the game object and its top-left corner, or an empty optional if the game
-     *         object does not have a Transform component attached
-     */
-    public Optional<Point2D.Double> getPointRelativeToGameObject(GameObject pGameObject) {
-        // TODO: change up where this is called from
-        if (mScreenMouseLocation.isPresent()) {
-            if (pGameObject.getTransform().isPresent() && pGameObject.getResolvedTransform().isPresent()) {
-                Transform transform = pGameObject.getResolvedTransform().get();
-                double normalizedX = (mScreenMouseLocation.get().getX() - transform.getX())
-                        / transform.getScaleX() + 0.5;
-                double normalizedY = (mScreenMouseLocation.get().getY() - transform.getY())
-                        / transform.getScaleY() + 0.5;
-                return Optional.of(new Point2D.Double(normalizedX, normalizedY));
-            } else {
-                return Optional.empty();
-            }
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
      * @return an optional containing the location of the mouse in normalized screen space relative to the dimension of
      *         the window, or an empty optional if the mouse wasn't inside the window
      */

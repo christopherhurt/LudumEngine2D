@@ -11,7 +11,10 @@ public interface IHandler {
 
     /**
      * Handles an event.
+     *
+     * @param pEvt the event to handle
+     * @param pSelf the owner of this handler
      */
-    void handle(AEvent pEvt);
+    void handle(AEvent pEvt, GameObject pSelf);
 
 }

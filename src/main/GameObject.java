@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -211,6 +212,30 @@ public final class GameObject {
         } else {
             // No transform on this game object, pass on the parent's resolved transform
             mResolvedTransform = parentResolvedTransform.copy();
+        }
+    }
+
+    /**
+     * @return an optional containing the normalized location of the mouse cursor relative to this game object
+     *         relative to the dimension of this game object and its top-left corner, or an empty optional if this game
+     *         object does not have a Transform component attached
+     */
+    public Optional<Point2D.Double> getRelativeMouseLocation(AInputEvent pEvt) {
+        Optional<Point2D.Double> worldMouseLocation = pEvt.getWorldMouseLocation();
+
+        if (worldMouseLocation.isPresent()) {
+            if (getTransform().isPresent() && getResolvedTransform().isPresent()) {
+                Transform transform = getResolvedTransform().get();
+                double normalizedX = (worldMouseLocation.get().getX() - transform.getX())
+                        / transform.getScaleX() + 0.5;
+                double normalizedY = (worldMouseLocation.get().getY() - transform.getY())
+                        / transform.getScaleY() + 0.5;
+                return Optional.of(new Point2D.Double(normalizedX, normalizedY));
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
         }
     }
 

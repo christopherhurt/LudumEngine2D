@@ -45,7 +45,7 @@ public abstract class AEvent {
      */
     private void fireForGameObjects(List<GameObject> pTargets) {
         pTargets.forEach(target -> {
-            target.getHandler().ifPresent(handler -> handler.handle(this));
+            target.getHandler().ifPresent(handler -> handler.handle(this, target));
             fireForGameObjects(target.getChildren());
         });
     }
