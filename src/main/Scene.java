@@ -3,11 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
@@ -28,6 +24,13 @@ public final class Scene {
      */
     private static final Queue<AInputEvent> PENDING_INPUT_EVENTS = new ConcurrentLinkedQueue<>();
 
+    /**
+     * Collection of event types to ignore in this scene. This is primarily for performance purposes when an event of
+     * a certain is entirely unused by any game objects in the scene. Events with a type in this collection will not be
+     * fired when the event is generated in this scene.
+     */
+    private static final Collection<EventType> EVENTS_TO_IGNORE = new HashSet<>();
+
     private List<GameObject> mGameObjects = new LinkedList<>();
     private ACamera mCamera;
     private Color mClearColor;
@@ -47,7 +50,7 @@ public final class Scene {
                 MouseEvent mouseEvent = (MouseEvent)pEvt;
                 mGameObjects.forEach(obj -> obj.getGUIComponent().ifPresent(gui -> gui.update(mouseEvent, obj)));
             }
-        }).build());
+        }).withZIndex(Integer.MIN_VALUE).build());
     }
 
     /**
@@ -281,6 +284,27 @@ public final class Scene {
      */
     public void setClearColor(Color pColor) {
         mClearColor = pColor;
+    }
+
+    /**
+     * Adds event types that should be ignored when fired for game objects in this scene. See the comment above the
+     * declaration of EVENTS_TO_IGNORE for why this is useful.
+     *
+     * @param pTypes the types of events to ignore in this scene
+     */
+    public void ignoreEventsOfTypes(EventType... pTypes) {
+        Collections.addAll(EVENTS_TO_IGNORE, pTypes);
+    }
+
+    /**
+     * Checks whether this scene is ignoring events of the specified type. This result of this method is checked every
+     * time before an event is fired. See the comment above the declaration of EVENTS_TO_IGNORE for why this is useful.
+     *
+     * @param pType the event type to check
+     * @return whether events of the given type are being ignored by this scene
+     */
+    boolean isIgnoringEventsOfType(EventType pType) {
+        return EVENTS_TO_IGNORE.contains(pType);
     }
 
 }

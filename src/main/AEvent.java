@@ -36,7 +36,12 @@ public abstract class AEvent {
      * @param pTargets the list of targets
      */
     final void fire(List<GameObject> pTargets) {
-        fireForGameObjects(pTargets);
+        if (!mScene.isIgnoringEventsOfType(mType)) {
+            fireForGameObjects(pTargets);
+        } else {
+            Debug.warn("Attempted to fire event of type " + mType.getStringRepresentation()
+                    + " in scene that is ignoring events of that type");
+        }
     }
 
     /**
