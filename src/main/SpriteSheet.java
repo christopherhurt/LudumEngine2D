@@ -1,9 +1,9 @@
 package main;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
  * A spritesheet implementation that can hold multiple textures which can be extracted individually.
