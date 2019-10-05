@@ -12,6 +12,7 @@ public abstract class AEvent {
 
     private EventType mType;
     private Scene mScene;
+    private boolean mConsumed = false;
 
     /**
      * Constructor.
@@ -46,6 +47,9 @@ public abstract class AEvent {
     private void fireForGameObjects(List<GameObject> pTargets) {
         pTargets.forEach(target -> {
             target.getHandler().ifPresent(handler -> handler.handle(this, target));
+            if (mConsumed) {
+                return;
+            }
             fireForGameObjects(target.getChildren());
         });
     }
@@ -70,6 +74,23 @@ public abstract class AEvent {
      */
     public final Scene getScene() {
         return mScene;
+    }
+
+    /**
+     * @return whether this event has been consumed
+     */
+    public boolean isConsumed() {
+        return mConsumed;
+    }
+
+    /**
+     * Consumes this event to prevent it from being propagated to other game objects.
+     *
+     * NOTE - GUI component and bounding box events that are consumed will also consume the mouse event that fired
+     *        them.
+     */
+    public void consume() {
+        mConsumed = true;
     }
 
 }

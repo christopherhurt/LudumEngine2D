@@ -96,13 +96,13 @@ public final class GUIButton extends AGUIComponent {
                 case MOUSE_BUTTON_PRESSED:
                     if (inBounds) {
                         mPressed = true;
-                        new GUIEvent(EventType.GUI_BUTTON_PRESSED, pEvt.getScene()).fire(List.of(pGameObject));
+                        fireGUIEvent(pEvt, EventType.GUI_BUTTON_PRESSED, pGameObject);
                     }
                     break;
                 case MOUSE_BUTTON_RELEASED:
                     if (inBounds) {
                         mPressed = false;
-                        new GUIEvent(EventType.GUI_BUTTON_RELEASED, pEvt.getScene()).fire(List.of(pGameObject));
+                        fireGUIEvent(pEvt, EventType.GUI_BUTTON_RELEASED, pGameObject);
                     }
                     break;
                 default:
@@ -111,6 +111,22 @@ public final class GUIButton extends AGUIComponent {
         } else {
             Debug.error("Failed to calculate relative mouse location for GUIButton relative to GameObject " +
                     "with id " + pGameObject.getId());
+        }
+    }
+
+    /**
+     * Static helper method that fires a GUI event of the specified type with the specified target. If the GUI event is
+     * consumed, the mouse event that fired it is also consumed.
+     *
+     * @param pSourceEvt the mouse event that generated the GUI event
+     * @param pType the type of GUI event to fire
+     * @param pTarget the target of the GUI event
+     */
+    private static void fireGUIEvent(MouseEvent pSourceEvt, EventType pType, GameObject pTarget) {
+        GUIEvent guiEvent = new GUIEvent(pType, pSourceEvt.getScene());
+        guiEvent.fire(List.of(pTarget));
+        if (guiEvent.isConsumed()) {
+            pSourceEvt.consume();
         }
     }
 
