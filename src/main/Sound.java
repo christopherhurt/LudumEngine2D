@@ -1,7 +1,7 @@
 package main;
 
 import org.lwjgl.openal.AL10;
-import org.lwjgl.util.WaveData;
+import org.newdawn.slick.openal.WaveData;
 
 /**
  * Represents a sound that can be played, paused, and stopped at any point by the user of the engine. The sound's gain
