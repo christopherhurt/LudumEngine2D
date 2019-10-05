@@ -12,6 +12,7 @@ package main;
 public enum EventType {
 
     // Game events
+    // Targets - all game objects in the current scene
     GAME_START("GAME_START"),
     GAME_CLOSE("GAME_CLOSE"),
     SCENE_LOAD("SCENE_LOAD"),
@@ -22,17 +23,24 @@ public enum EventType {
     LATE_UPDATE("LATE_UPDATE"),
 
     // Key events
+    // Targets - all game objects in the current scene
     KEY_PRESSED("KEY_PRESSED"),
     KEY_RELEASED("KEY_RELEASED"),
 
     // Mouse events
+    // Targets - all game objects in the current scene
     MOUSE_BUTTON_PRESSED("MOUSE_BUTTON_PRESSED"),
     MOUSE_BUTTON_RELEASED("MOUSE_BUTTON_RELEASED"),
     MOUSE_MOVED("MOUSE_MOVED"),
 
     // GUI events
+    // Targets - the game object with the source GUI component attached
     GUI_BUTTON_PRESSED("GUI_BUTTON_PRESSED"),
-    GUI_BUTTON_RELEASED("GUI_BUTTON_RELEASED");
+    GUI_BUTTON_RELEASED("GUI_BUTTON_RELEASED"),
+
+    // Interpolation events
+    // Targets - all game objects in the current scene
+    INTERPOLATION_FINISHED("INTERPOLATION_FINISHED");
 
     private String mStringRepresentation;
 

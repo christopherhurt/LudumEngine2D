@@ -51,7 +51,7 @@ public final class Scene {
     }
 
     /**
-     * Updates all of the game objects and menu components in this scene.
+     * Updates all of the game objects in this scene, called when this is the current scene.
      */
     void update() {
         // Sort the game objects by z-index and parentage
@@ -62,6 +62,12 @@ public final class Scene {
 
         // Resolve overall transforms based on parentage
         resolveTransforms(mGameObjects);
+
+        // Update interpolation values
+        // Even though interpolations are static across all scenes, these are updated here because interpolation events
+        // are fired for game objects in the current scene, and game objects in the current scene should be sorted and
+        // have updated transforms before handling interpolation events.
+        InterpolationFactory.updateAll();
 
         // Process all pending input events. This needs to happen after transforms have been resolved and before other
         // update events occur.
@@ -124,7 +130,7 @@ public final class Scene {
     }
 
     /**
-     * Renders all of the game objects and menu components in this scene.
+     * Renders all of the game objects in this scene, called when this is the current scene.
      *
      * @param pGraphics the graphics context used for rendering
      */
