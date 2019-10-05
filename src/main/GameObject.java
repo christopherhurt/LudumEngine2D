@@ -217,7 +217,7 @@ public final class GameObject {
     /**
      * @return the list of children of this game object
      */
-    List<GameObject> getChildren() {
+    public List<GameObject> getChildren() {
         return mChildren;
     }
 
