@@ -146,6 +146,8 @@ public final class Game {
         // A copy of the objects list is made in case this event modifies the game objects in the scene
         new GameEvent(EventType.GAME_CLOSE, getCurrentScene()).fire(getCurrentScene().getCopyOfObjects());
 
+        SoundFactory.destroyAll();
+
         // This should be called last, as it terminates the game
         Window.destroy();
     }
