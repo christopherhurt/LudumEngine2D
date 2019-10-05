@@ -45,7 +45,8 @@ public final class AnimationAppearance extends AAppearance {
      * {@inheritDoc}
      */
     @Override
-    void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
+    void render(Graphics2D pGraphics, Transform pTransform) {
+        // Update the current texture
         mCurrentIndex = (mCurrentIndex + mTextures.length / mDuration * Time.getDelta()) % mTextures.length;
 
         Texture currentTexture = mTextures[(int)mCurrentIndex];

@@ -25,6 +25,7 @@ public final class GameObject {
     private Transform mTransform;
     private AAppearance mAppearance;
     private Kinematics mKinematics;
+    private AGUIComponent mGUIComponent;
 
     private List<GameObject> mChildren = new LinkedList<>();
     private Transform mResolvedTransform = null;
@@ -40,9 +41,10 @@ public final class GameObject {
      * @param pTransform the transform containing the game object's position, rotation, and scale
      * @param pAppearance the appearance of the game object, how it's rendered
      * @param pKinematics the kinematics of the game object describing its motion
+     * @param pGUIComponent the GUI component used for this game object
      */
     GameObject(int pId, int pZIndex, String pTag, GameObject pParent, IHandler pHandler, Transform pTransform,
-               AAppearance pAppearance, Kinematics pKinematics) {
+               AAppearance pAppearance, Kinematics pKinematics, AGUIComponent pGUIComponent) {
         mId = pId;
         mZIndex = pZIndex;
         mTag = pTag;
@@ -51,6 +53,7 @@ public final class GameObject {
         mTransform = pTransform;
         mAppearance = pAppearance;
         mKinematics = pKinematics;
+        mGUIComponent = pGUIComponent;
 
         if (mParent != null) {
             mParent.addChild(this);
@@ -114,6 +117,13 @@ public final class GameObject {
     }
 
     /**
+     * @return the GUI component
+     */
+    public Optional<AGUIComponent> getGUIComponent() {
+        return Optional.ofNullable(mGUIComponent);
+    }
+
+    /**
      * Sets the z-index.
      *
      * @param pZIndex the z-index to be set to
@@ -165,6 +175,15 @@ public final class GameObject {
      */
     public void setKinematics(Kinematics pKinematics) {
         mKinematics = pKinematics;
+    }
+
+    /**
+     * Sets the GUI component.
+     *
+     * @param pGUIComponent the GUI component to be set to
+     */
+    public void setGUIComponent(AGUIComponent pGUIComponent) {
+        mGUIComponent = pGUIComponent;
     }
 
     /**

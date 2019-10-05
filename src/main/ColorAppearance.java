@@ -33,7 +33,7 @@ public final class ColorAppearance extends AAppearance {
      * {@inheritDoc}
      */
     @Override
-    void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
+    void render(Graphics2D pGraphics, Transform pTransform) {
         pGraphics.setColor(mColor);
         int width = Window.normalizedToScreen(pTransform.getScaleX());
         int height = Window.normalizedToScreen(pTransform.getScaleY());

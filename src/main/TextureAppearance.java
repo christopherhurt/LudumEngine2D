@@ -25,7 +25,7 @@ public final class TextureAppearance extends AAppearance {
      * {@inheritDoc}
      */
     @Override
-    void updateAndRender(Graphics2D pGraphics, Transform pTransform) {
+    void render(Graphics2D pGraphics, Transform pTransform) {
         int width = Window.normalizedToScreen(pTransform.getScaleX());
         int height = Window.normalizedToScreen(pTransform.getScaleY());
         pGraphics.drawImage(mTexture.getImage(), Window.normalizedToScreen(pTransform.getX()) - width / 2,

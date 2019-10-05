@@ -3,8 +3,6 @@ package main;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**

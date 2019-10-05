@@ -40,6 +40,14 @@ public final class Scene {
     public Scene(ACamera pCamera, Color pClearColor) {
         mCamera = pCamera;
         mClearColor = pClearColor;
+
+        // Helper game object for passing mouse events to GUI buttons
+        add(new GameObjectBldr().withHandler((pEvt, pSelf) -> {
+            if (pEvt instanceof MouseEvent) {
+                MouseEvent mouseEvent = (MouseEvent)pEvt;
+                mGameObjects.forEach(obj -> obj.getGUIComponent().ifPresent(gui -> gui.update(mouseEvent, obj)));
+            }
+        }).build());
     }
 
     /**
@@ -140,15 +148,29 @@ public final class Scene {
      */
     private static void renderGameObjects(List<GameObject> pGameObjects, Graphics2D pGraphics) {
         pGameObjects.forEach(obj -> {
+            Optional<Transform> resolvedTransform = obj.getResolvedTransform();
+
+            // Render appearance
             obj.getAppearance().ifPresent(appearance -> {
-                Optional<Transform> resolvedTransform = obj.getResolvedTransform();
                 if (resolvedTransform.isPresent()) {
-                    appearance.updateAndRender(pGraphics, resolvedTransform.get());
+                    appearance.render(pGraphics, resolvedTransform.get());
                 } else {
                     Debug.error("GameObject with id "
                             + obj.getId() + " has appearance component without a resolved transform");
                 }
             });
+
+            // Render GUI component
+            obj.getGUIComponent().ifPresent(gui -> {
+                if (resolvedTransform.isPresent()) {
+                    gui.render(pGraphics, resolvedTransform.get());
+                } else {
+                    Debug.error("GameObject with id "
+                            + obj.getId() + " has GUI component without a resolved transform");
+                }
+            });
+
+            // Render children
             renderGameObjects(obj.getChildren(), pGraphics);
         });
     }

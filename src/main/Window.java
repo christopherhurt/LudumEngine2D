@@ -5,6 +5,8 @@ import javax.swing.JFrame;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
@@ -49,11 +51,27 @@ public final class Window {
         sFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         sFrame.setResizable(false);
         sFrame.addWindowListener(new WindowAdapter() {
+
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void windowClosing(WindowEvent pEvt) {
                 sClosing = true;
                 Game.close();
             }
+
+        });
+        sFrame.addComponentListener(new ComponentAdapter() {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void componentResized(ComponentEvent e) {
+                GUIFontFactory.updateFonts(Window.getDimension().getHeight());
+            }
+
         });
 
         if (pImagePath != null) {

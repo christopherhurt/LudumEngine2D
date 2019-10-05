@@ -1,23 +1,15 @@
 package main;
 
-import java.awt.Graphics2D;
-
 /**
  * Abstract class that represents the appearance of a game object. This can be a solid color, texture, animation, etc.
- * This is an abstract class and not an interface to keep the mechanisms of how the appearance is rendered
- * package-private.
+ * This is an empty class to abstract various appearance implementations without allowing the ARenderable class to be
+ * publicly visible to the user of the engine.
  *
  * @author Chris Hurt
  * @version 10.03.19
  */
-public abstract class AAppearance {
+public abstract class AAppearance extends ARenderable {
 
-    /**
-     * Updates and renders the appearance using the given transform.
-     *
-     * @param pGraphics the graphics context to use for rendering
-     * @param pTransform the transform to use for rendering
-     */
-    abstract void updateAndRender(Graphics2D pGraphics, Transform pTransform);
+    // Empty class
 
 }
