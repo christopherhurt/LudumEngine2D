@@ -205,7 +205,7 @@ public final class GameObject {
     /**
      * @return the resolved transform, possibly empty
      */
-    Optional<Transform> getResolvedTransform() {
+    public Optional<Transform> getResolvedTransform() {
         return Optional.ofNullable(mResolvedTransform);
     }
 
