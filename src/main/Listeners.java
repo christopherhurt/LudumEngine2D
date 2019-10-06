@@ -32,7 +32,7 @@ final class Listeners {
         public void keyPressed(KeyEvent pEvt) {
             if (!KEYS_DOWN.contains(pEvt.getKeyCode())) {
                 Scene.enqueueInputEvent(new main.KeyEvent(EventType.KEY_PRESSED, Game.getCurrentScene(),
-                        Window.getScreenMouseLocation(), Window.getWorldMouseLocation(), pEvt.getKeyCode()));
+                        Window.getScreenMouseLocation(), Window.getWorldMouseLocation(), pEvt.getKeyChar()));
             }
             KEYS_DOWN.add(pEvt.getKeyCode());
         }
@@ -43,7 +43,7 @@ final class Listeners {
         @Override
         public void keyReleased(KeyEvent pEvt) {
             Scene.enqueueInputEvent(new main.KeyEvent(EventType.KEY_RELEASED, Game.getCurrentScene(),
-                    Window.getScreenMouseLocation(), Window.getWorldMouseLocation(), pEvt.getKeyCode()));
+                    Window.getScreenMouseLocation(), Window.getWorldMouseLocation(), pEvt.getKeyChar()));
             KEYS_DOWN.remove(pEvt.getKeyCode());
         }
 

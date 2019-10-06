@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 public final class KeyEvent extends AInputEvent {
 
-    private int mKeyCode;
+    private char mKey;
 
     /**
      * Package-private constructor.
@@ -21,12 +21,12 @@ public final class KeyEvent extends AInputEvent {
      * @param pScene the scene in which the event occurred
      * @param pScreenMouseLocation the location of the mouse cursor in screen space when the event occurred
      * @param pWorldMouseLocation the location of the mouse cursor in world space when the event occurred
-     * @param pKeyCode the key code representing the key associated with the event
+     * @param pKey the char representation of the key that was pressed
      */
     KeyEvent(EventType pType, Scene pScene, Optional<Point2D.Double> pScreenMouseLocation,
-             Optional<Point2D.Double> pWorldMouseLocation, int pKeyCode) {
+             Optional<Point2D.Double> pWorldMouseLocation, char pKey) {
         super(pType, pScene, pScreenMouseLocation, pWorldMouseLocation);
-        mKeyCode = pKeyCode;
+        mKey = pKey;
     }
 
     /**
@@ -38,10 +38,10 @@ public final class KeyEvent extends AInputEvent {
     }
 
     /**
-     * @return the key code associated with the event
+     * @return the key associated with the event
      */
-    public int getKeyCode() {
-        return mKeyCode;
+    public char getKey() {
+        return mKey;
     }
 
 }
