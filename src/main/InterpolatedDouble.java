@@ -79,7 +79,11 @@ public final class InterpolatedDouble {
      * @return whether this interpolation has reached its final value
      */
     public boolean isFinished() {
-        return mValue >= mFinalValue;
+        if (mFinalValue > mInitialValue) {
+            return mValue >= mFinalValue;
+        } else {
+            return mValue <= mFinalValue;
+        }
     }
 
     /**
