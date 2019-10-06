@@ -65,7 +65,7 @@ public final class Scene {
                 // If the mouse event was consumed, stop producing GUI events
                 return;
             } else {
-                generateGUIEvents(pEvt, obj.getChildrenUnmodifiable());
+                generateGUIEvents(pEvt, obj.getChildren());
             }
         }
     }
@@ -108,7 +108,7 @@ public final class Scene {
                 // If the mouse event was consumed, stop producing bounding box events
                 return;
             } else {
-                generateBoundingBoxEvents(pEvt, obj.getChildrenUnmodifiable());
+                generateBoundingBoxEvents(pEvt, obj.getChildren());
             }
         }
     }
@@ -175,7 +175,7 @@ public final class Scene {
     private static void sortGameObjectList(List<GameObject> pGameObjects) {
         pGameObjects.sort(Comparator.comparingInt(GameObject::getZIndex));
         for (GameObject gameObject : pGameObjects) {
-            sortGameObjectList(gameObject.getChildrenUnmodifiable());
+            sortGameObjectList(gameObject.getChildren());
         }
     }
 
@@ -187,7 +187,7 @@ public final class Scene {
     private static void resolveTransforms(List<GameObject> pGameObjects) {
         pGameObjects.forEach(obj -> {
             obj.resolveTransformFromParent();
-            resolveTransforms(obj.getChildrenUnmodifiable());
+            resolveTransforms(obj.getChildren());
         });
     }
 
@@ -206,7 +206,7 @@ public final class Scene {
                             + obj.getId() + " has kinematics component without a transform component");
                 }
             });
-            updateKinematics(obj.getChildrenUnmodifiable());
+            updateKinematics(obj.getChildren());
         });
     }
 
@@ -270,7 +270,7 @@ public final class Scene {
             }
 
             // Render children
-            renderGameObjects(obj.getChildrenUnmodifiable(), pGraphics);
+            renderGameObjects(obj.getChildren(), pGraphics);
         });
     }
 

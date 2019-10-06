@@ -55,7 +55,7 @@ public abstract class AEvent {
             if (mConsumed) {
                 return;
             }
-            fireForGameObjects(target.getChildrenUnmodifiable());
+            fireForGameObjects(target.getChildren());
         });
     }
 

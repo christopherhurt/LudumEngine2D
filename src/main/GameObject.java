@@ -271,6 +271,13 @@ public class GameObject {
     }
 
     /**
+     * @return the list of children of this game object
+     */
+    List<GameObject> getChildren() {
+        return mChildren;
+    }
+
+    /**
      * @return the resolved transform, possibly empty
      */
     public Optional<Transform> getResolvedTransform() {
