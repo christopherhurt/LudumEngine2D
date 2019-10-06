@@ -1,9 +1,7 @@
 package main;
 
 import java.awt.geom.Point2D;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Represents a game object, the basic unit of the game object. Components can be added to each game object individually
@@ -235,15 +233,41 @@ public class GameObject {
      *
      * @param pChild the child
      */
-    private void addChild(GameObject pChild) {
+    public void addChild(GameObject pChild) {
         mChildren.add(pChild);
+        pChild.mParent = this;
     }
 
     /**
-     * @return the list of children of this game object
+     * Removes a child from this game object's list of children.
+     *
+     * @param pChild the child game object to remove
      */
-    public List<GameObject> getChildren() {
-        return mChildren;
+    public void removeChild(GameObject pChild) {
+        if (mChildren.remove(pChild)) {
+            pChild.mParent = null;
+        } else {
+            Debug.warn("Failed to remove child GameObject with id "
+                    + pChild.mId + " from parent GameObject with id " + mId);
+        }
+    }
+
+    /**
+     * Clears the list of children to this game object.
+     */
+    public void clearChildren() {
+        Iterator<GameObject> childIterator = mChildren.iterator();
+        while (childIterator.hasNext()) {
+            childIterator.next().mParent = null;
+            childIterator.remove();
+        }
+    }
+
+    /**
+     * @return the unmodifiable list of children of this game object
+     */
+    public List<GameObject> getChildrenUnmodifiable() {
+        return Collections.unmodifiableList(mChildren);
     }
 
     /**
