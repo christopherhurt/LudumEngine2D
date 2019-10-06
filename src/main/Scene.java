@@ -143,6 +143,12 @@ public final class Scene {
             PENDING_INPUT_EVENTS.remove().fire(getCopyOfObjects());
         }
 
+        // Update interpolation values
+        // Even though interpolations are static across all scenes, these are updated here because interpolation events
+        // are fired for game objects in the current scene. This is done before sorting and resolving transforms in the
+        // case one of these events modifies the scene.
+        InterpolationFactory.updateAll();
+
         // Sort the game objects by z-index and parentage
         sortGameObjectList(mGameObjects);
 
@@ -151,12 +157,6 @@ public final class Scene {
 
         // Resolve overall transforms based on parentage
         resolveTransforms(mGameObjects);
-
-        // Update interpolation values
-        // Even though interpolations are static across all scenes, these are updated here because interpolation events
-        // are fired for game objects in the current scene, and game objects in the current scene should be sorted and
-        // have updated transforms before handling interpolation events.
-        InterpolationFactory.updateAll();
 
         // Update game objects
         // A copy of the game objects list is made in case one of the events modifies the game objects in the scene
