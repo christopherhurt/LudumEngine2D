@@ -36,7 +36,7 @@ public class GameObject {
     /**
      * Default constructor.
      */
-    protected GameObject() {
+    public GameObject() {
         this(null, 0);
     }
 
@@ -45,7 +45,7 @@ public class GameObject {
      *
      * @param pParent the optional parent of this game object
      */
-    protected GameObject(GameObject pParent) {
+    public GameObject(GameObject pParent) {
         this(pParent, 0);
     }
 
@@ -55,7 +55,7 @@ public class GameObject {
      * @param pParent the optional parent of this game object
      * @param pZIndex the z-index for ordering the game object in the scene
      */
-    protected GameObject(GameObject pParent, int pZIndex) {
+    public GameObject(GameObject pParent, int pZIndex) {
         mParent = pParent;
         mZIndex = pZIndex;
 

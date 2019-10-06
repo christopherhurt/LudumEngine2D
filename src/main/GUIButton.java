@@ -71,11 +71,12 @@ public final class GUIButton extends AGUIComponent {
             currentTexture = mDefaultTexture;
         }
 
-        // Note - the x and y positions indicated by the given transform represent the bottom-left corner of the button
+        // Draw the button where the transform specifies its center point
+        int width = (int)(Window.normalizedToScreen(pTransform.getScaleX()) * Window.getAspectRatio());
         int height = Window.normalizedToScreen(pTransform.getScaleY());
-        pGraphics.drawImage(currentTexture.getImage(), Window.normalizedToScreen(pTransform.getX()),
-                Window.normalizedToScreen(pTransform.getY()) - height,
-                Window.normalizedToScreen(pTransform.getScaleX()), height, null);
+        pGraphics.drawImage(currentTexture.getImage(), Window.normalizedToScreen(pTransform.getX()) - width / 2,
+                Window.normalizedToScreen(pTransform.getY()) - height / 2,
+                width, height, null);
     }
 
     /**

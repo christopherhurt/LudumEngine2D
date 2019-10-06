@@ -43,4 +43,11 @@ public final class Texture {
         return mImage;
     }
 
+    /**
+     * @return the width / height aspect ratio of the texture's underlying image, useful is on-screen sizing
+     */
+    public double getAspectRatio() {
+        return (double)mImage.getWidth() / mImage.getHeight();
+    }
+
 }

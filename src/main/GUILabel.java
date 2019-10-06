@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Represents a GUI label component, which can be used to render text to the screen. The appearance of the text can be
@@ -38,8 +39,14 @@ public final class GUILabel extends AGUIComponent {
         // X and y positions indicated by the given transform represent the bottom-left corner of the label
         pGraphics.setFont(mFont.getJavaFont());
         pGraphics.setColor(mColor);
-        pGraphics.drawString(mText, Window.normalizedToScreen(pTransform.getX() - pTransform.getScaleX() / 2d),
-                Window.normalizedToScreen(pTransform.getY() - pTransform.getScaleY() / 2d));
+
+        // Get the pixel bounds of the label
+        Rectangle2D bounds = pGraphics.getFont().createGlyphVector(pGraphics.getFontRenderContext(), mText)
+                .getPixelBounds(null, 0, 0);
+
+        // Draw label where the transform specifies the center point
+        pGraphics.drawString(mText, (int)(Window.normalizedToScreen(pTransform.getX()) - bounds.getWidth() / 2d),
+                (int)(Window.normalizedToScreen(pTransform.getY()) + bounds.getHeight() / 2));
     }
 
     /**

@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -92,6 +93,7 @@ public final class Game {
     private static void render() {
         BufferStrategy bufferStrategy = Window.getCanvas().getBufferStrategy();
         Graphics2D graphics = (Graphics2D)bufferStrategy.getDrawGraphics();
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         getCurrentScene().render(graphics);
 
