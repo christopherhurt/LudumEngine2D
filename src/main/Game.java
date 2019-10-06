@@ -76,7 +76,7 @@ public final class Game {
                     }
                 }
             }
-        }).start();
+        }, "Game Thread").start();
     }
 
     /**

@@ -135,6 +135,14 @@ public final class Scene {
      * Updates all of the game objects in this scene, called when this is the current scene.
      */
     void update() {
+        // Process all pending input events. This should happen first every frame so draw orders and transforms are
+        // resolved properly in the case they are modified by any input event
+        // A copy of the scene's game object list is made after every event is processed in the case an event makes
+        // modifications to the scene
+        while (!PENDING_INPUT_EVENTS.isEmpty()) {
+            PENDING_INPUT_EVENTS.remove().fire(getCopyOfObjects());
+        }
+
         // Sort the game objects by z-index and parentage
         sortGameObjectList(mGameObjects);
 
@@ -149,14 +157,6 @@ public final class Scene {
         // are fired for game objects in the current scene, and game objects in the current scene should be sorted and
         // have updated transforms before handling interpolation events.
         InterpolationFactory.updateAll();
-
-        // Process all pending input events. This needs to happen after transforms have been resolved and before other
-        // update events occur.
-        // A copy of the scene's game object list is made after every event is processed in the case an event makes
-        // modifications to the scene
-        while (!PENDING_INPUT_EVENTS.isEmpty()) {
-            PENDING_INPUT_EVENTS.remove().fire(getCopyOfObjects());
-        }
 
         // Update game objects
         // A copy of the game objects list is made in case one of the events modifies the game objects in the scene
