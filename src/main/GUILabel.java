@@ -38,7 +38,8 @@ public final class GUILabel extends AGUIComponent {
         // X and y positions indicated by the given transform represent the bottom-left corner of the label
         pGraphics.setFont(mFont.getJavaFont());
         pGraphics.setColor(mColor);
-        pGraphics.drawString(mText, (float)pTransform.getX(), (float)pTransform.getY());
+        pGraphics.drawString(mText, Window.normalizedToScreen(pTransform.getX() - pTransform.getScaleX() / 2d),
+                Window.normalizedToScreen(pTransform.getY() - pTransform.getScaleY() / 2d));
     }
 
     /**
