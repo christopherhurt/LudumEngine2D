@@ -12,51 +12,56 @@ import java.util.Optional;
  * @author Chris Hurt
  * @version 10.03.19
  */
-public final class GameObject {
+public class GameObject {
 
     /** The default resolve transform, which won't have any effect on the resolving game object */
     private static final Transform DEFAULT_RESOLVE_TRANSFORM = new Transform(0d, 0d, 1d, 1d);
 
-    private int mId;
-    private int mZIndex;
-    private String mTag;
+    /** Tracks unique identifiers for debugging purposes */
+    private static int sIdCounter = 0;
+
     private GameObject mParent;
-    private IHandler mHandler;
-    private Transform mTransform;
-    private AAppearance mAppearance;
-    private Kinematics mKinematics;
-    private AGUIComponent mGUIComponent;
-    private BoundingBox mBoundingBox;
+    private int mZIndex;
+    private int mId;
+
+    private String mTag = null;
+    private IHandler mHandler = null;
+    private Transform mTransform = null;
+    private AAppearance mAppearance = null;
+    private Kinematics mKinematics = null;
+    private AGUIComponent mGUIComponent = null;
+    private BoundingBox mBoundingBox = null;
 
     private List<GameObject> mChildren = new LinkedList<>();
     private Transform mResolvedTransform = null;
 
     /**
-     * Package-private constructor.
-     *
-     * @param pId the game object's unique id
-     * @param pZIndex the z-index used to determine update and render order
-     * @param pTag the tag identifier, not necessarily unique
-     * @param pParent the optional parent of this game object
-     * @param pHandler the handler for all event types
-     * @param pTransform the transform containing the game object's position, rotation, and scale
-     * @param pAppearance the appearance of the game object, how it's rendered
-     * @param pKinematics the kinematics of the game object describing its motion
-     * @param pGUIComponent the GUI component used for this game object
-     * @param pBoundingBox the bounding box component to use for this game object
+     * Default constructor.
      */
-    GameObject(int pId, int pZIndex, String pTag, GameObject pParent, IHandler pHandler, Transform pTransform,
-               AAppearance pAppearance, Kinematics pKinematics, AGUIComponent pGUIComponent, BoundingBox pBoundingBox) {
-        mId = pId;
-        mZIndex = pZIndex;
-        mTag = pTag;
+    protected GameObject() {
+        this(null, 0);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param pParent the optional parent of this game object
+     */
+    protected GameObject(GameObject pParent) {
+        this(pParent, 0);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param pParent the optional parent of this game object
+     * @param pZIndex the z-index for ordering the game object in the scene
+     */
+    protected GameObject(GameObject pParent, int pZIndex) {
         mParent = pParent;
-        mHandler = pHandler;
-        mTransform = pTransform;
-        mAppearance = pAppearance;
-        mKinematics = pKinematics;
-        mGUIComponent = pGUIComponent;
-        mBoundingBox = pBoundingBox;
+        mZIndex = pZIndex;
+
+        mId = sIdCounter++;
 
         if (mParent != null) {
             mParent.addChild(this);
@@ -147,7 +152,7 @@ public final class GameObject {
      *
      * @param pTag the tag to be set to
      */
-    public void setTag(String pTag) {
+    public void attachTag(String pTag) {
         mTag = pTag;
     }
 
@@ -156,7 +161,7 @@ public final class GameObject {
      *
      * @param pHandler the handler to be set to
      */
-    public void setHandler(IHandler pHandler) {
+    public void attachHandler(IHandler pHandler) {
         mHandler = pHandler;
     }
 
@@ -165,7 +170,7 @@ public final class GameObject {
      *
      * @param pTransform the transform to be set to
      */
-    public void setTransform(Transform pTransform) {
+    public void attachTransform(Transform pTransform) {
         mTransform = pTransform;
     }
 
@@ -174,8 +179,13 @@ public final class GameObject {
      *
      * @param pAppearance the appearance to be set to
      */
-    public void setAppearance(AAppearance pAppearance) {
-        mAppearance = pAppearance;
+    public void attachAppearance(AAppearance pAppearance) {
+        if (mTransform == null) {
+            Debug.error("Cannot attach appearance component to GameObject with id "
+                    + mId + " that doesn't have a transform component");
+        } else {
+            mAppearance = pAppearance;
+        }
     }
 
     /**
@@ -183,8 +193,13 @@ public final class GameObject {
      *
      * @param pKinematics the kinematics to be set to
      */
-    public void setKinematics(Kinematics pKinematics) {
-        mKinematics = pKinematics;
+    public void attachKinematics(Kinematics pKinematics) {
+        if (mTransform == null) {
+            Debug.error("Cannot attach kinematics component to GameObject with id "
+                    + mId + " that doesn't have a transform component");
+        } else {
+            mKinematics = pKinematics;
+        }
     }
 
     /**
@@ -192,8 +207,13 @@ public final class GameObject {
      *
      * @param pGUIComponent the GUI component to be set to
      */
-    public void setGUIComponent(AGUIComponent pGUIComponent) {
-        mGUIComponent = pGUIComponent;
+    public void attachGUIComponent(AGUIComponent pGUIComponent) {
+        if (mTransform == null) {
+            Debug.error("Cannot attach GUI component to GameObject with id "
+                    + mId + " that doesn't have a transform component");
+        } else {
+            mGUIComponent = pGUIComponent;
+        }
     }
 
     /**
@@ -201,8 +221,13 @@ public final class GameObject {
      *
      * @param pBoundingBox the bounding box component to be set to
      */
-    public void setBoundingBox(BoundingBox pBoundingBox) {
-        mBoundingBox = pBoundingBox;
+    public void attachBoundingBox(BoundingBox pBoundingBox) {
+        if (mTransform == null) {
+            Debug.error("Cannot attach bounding box component to GameObject with id "
+                    + mId + " that doesn't have a transform component");
+        } else {
+            mBoundingBox = pBoundingBox;
+        }
     }
 
     /**

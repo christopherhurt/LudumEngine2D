@@ -46,23 +46,7 @@ public final class Scene {
         mClearColor = pClearColor;
 
         // Helper game object for passing mouse events to GUI buttons and bounding box components
-        add(new GameObjectBldr().withHandler((pEvt, pSelf) -> {
-            if (pEvt instanceof MouseEvent) {
-                MouseEvent mouseEvent = (MouseEvent)pEvt;
-
-                // Pass to GUI buttons
-                // A copy of the game objects list is used in case any of the handlers of the GUI events modify the
-                // scene
-                generateGUIEvents(mouseEvent, getCopyOfObjects());
-
-                // Check if bounding box events should be fired
-                // These events can only be fired if the mouse was pressed or released
-                if (pEvt.getType() == EventType.MOUSE_BUTTON_PRESSED
-                        || pEvt.getType() == EventType.MOUSE_BUTTON_RELEASED) {
-                    generateBoundingBoxEvents(mouseEvent, getCopyOfObjects());
-                }
-            }
-        }).withZIndex(Integer.MIN_VALUE).build());
+        add(new SceneHelper(this));
     }
 
     /**
@@ -72,7 +56,7 @@ public final class Scene {
      * @param pEvt the mouse event generating the GUI events
      * @param pGameObjects the list of event targets
      */
-    private static void generateGUIEvents(MouseEvent pEvt, List<GameObject> pGameObjects) {
+    static void generateGUIEvents(MouseEvent pEvt, List<GameObject> pGameObjects) {
         for (GameObject obj : pGameObjects) {
             // Pass the event to the GUI component to optionally process and generate the GUI event
             obj.getGUIComponent().ifPresent(gui -> gui.update(pEvt, obj));
@@ -93,7 +77,7 @@ public final class Scene {
      * @param pEvt the mouse event generating the bounding box events
      * @param pGameObjects the list of event targets
      */
-    private static void generateBoundingBoxEvents(MouseEvent pEvt, List<GameObject> pGameObjects) {
+    static void generateBoundingBoxEvents(MouseEvent pEvt, List<GameObject> pGameObjects) {
         for (GameObject obj : pGameObjects) {
             obj.getBoundingBox().ifPresent(box ->
                     obj.getRelativeMouseLocation(pEvt).ifPresent(point -> {
