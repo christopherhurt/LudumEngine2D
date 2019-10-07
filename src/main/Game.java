@@ -150,8 +150,11 @@ public final class Game {
 
         SoundFactory.destroyAll();
 
-        // This should be called last, as it terminates the game
+        // This should be called last before the program is terminated
         Window.destroy();
+
+        // Terminate the game
+        System.exit(0);
     }
 
     private Game() {
