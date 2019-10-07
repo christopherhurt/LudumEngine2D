@@ -2,6 +2,7 @@ package ludumEngine2D;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,7 +126,7 @@ public final class GUIButton extends AGUIComponent {
      */
     private static void fireGUIEvent(MouseEvent pSourceEvt, EventType pType, GameObject pTarget) {
         GUIEvent guiEvent = new GUIEvent(pType, pSourceEvt.getScene());
-        guiEvent.fire(List.of(pTarget));
+        guiEvent.fire(Collections.singletonList(pTarget));
         if (guiEvent.isConsumed()) {
             pSourceEvt.consume();
         }

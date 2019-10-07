@@ -125,7 +125,7 @@ public final class Scene {
                                              GameObject pTarget) {
         BoundingBoxEvent boxEvent = new BoundingBoxEvent(pType, pSourceEvt.getScene(), pRelativePoint,
                 pSourceEvt.getButtonCode());
-        boxEvent.fire(List.of(pTarget));
+        boxEvent.fire(Collections.singletonList(pTarget));
         if (boxEvent.isConsumed()) {
             pSourceEvt.consume();
         }
@@ -310,7 +310,7 @@ public final class Scene {
         }
 
         mGameObjects.add(pGameObject);
-        new GameEvent(EventType.ADD_TO_SCENE, this).fire(List.of(pGameObject));
+        new GameEvent(EventType.ADD_TO_SCENE, this).fire(Collections.singletonList(pGameObject));
         return true;
     }
 
@@ -323,7 +323,7 @@ public final class Scene {
     public boolean remove(GameObject pGameObject) {
         boolean removed = mGameObjects.remove(pGameObject);
         if (removed) {
-            new GameEvent(EventType.REMOVE_FROM_SCENE, this).fire(List.of(pGameObject));
+            new GameEvent(EventType.REMOVE_FROM_SCENE, this).fire(Collections.singletonList(pGameObject));
         }
         return removed;
     }

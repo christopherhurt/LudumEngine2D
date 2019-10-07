@@ -74,7 +74,7 @@ public final class SaveFile {
      * @param pObj the object to write to file
      */
     public void writeObject(Object pObj) {
-        writeLines(List.of(pObj));
+        writeLines(Collections.singletonList(pObj));
     }
 
     /**
